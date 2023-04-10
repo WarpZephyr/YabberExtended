@@ -10,11 +10,6 @@ namespace Yabber
     {
         public static void Unpack(this TPF tpf, string sourceName, string targetDir, IProgress<float> progress)
         {
-#if !DEBUG
-            if (tpf.Platform != TPF.TPFPlatform.PC)
-                throw new NotSupportedException("Yabber does not support console TPFs at the moment.");
-#endif
-
             Directory.CreateDirectory(targetDir);
             var xws = new XmlWriterSettings();
             xws.Indent = true;
