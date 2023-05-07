@@ -1,10 +1,10 @@
 ﻿using SoulsFormats;
 using SoulsFormats.AC4;
-using SoulsFormats.ACFA;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Yabber.Formats;
 
 namespace Yabber
 {
@@ -309,6 +309,7 @@ namespace Yabber
                 else if (filename == "acparts.bin" || filename == "enemyparts.bin" || filename == "stabilizer.bin")
                 {
                     Console.WriteLine("Armored Core 4 AcParts has not been implemented yet.");
+                    return true;
                 }
                 else if (filename == "AcParts.bin" || filename == "EnemyParts.bin" || filename == "Stabilizer.bin")
                 {
@@ -316,17 +317,46 @@ namespace Yabber
                     //Console.WriteLine($"Unpacking AcParts: {filename}...");
                     //ACPARTS ap = ACPARTS.Read(sourceFile);
                     //ap.Unpack(targetDir, progress);
+                    return true;
                 }
-                else if (ACFASubtitle.Is(sourceFile))
+                else if (filename == "acvparts.bin")
                 {
-                    Console.WriteLine($"Unpacking ACFA-Subtitle: {filename}...");
-                    ACFASubtitle sub = ACFASubtitle.Read(sourceFile);
-                    sub.Unpack(filename, sourceDir, progress);
+                    Console.WriteLine("Armored Core 5thgen AcParts has not been implemented yet.");
+                    return true;
                 }
-                else if (sourceFile.EndsWith(".FA-Sub.xml"))
+                //else if (DebriefingSubtitle.Is(sourceFile))
+                //{
+                //    Console.WriteLine($"Unpacking DebriefingSubtitle: {filename}...");
+                //    DebriefingSubtitle sub = DebriefingSubtitle.Read(sourceFile);
+                //    sub.Unpack(filename, sourceDir, progress);
+                //}
+                else if (sourceFile.EndsWith(".DebSub.xml"))
                 {
-                    Console.WriteLine($"Repacking ACFA-Subtitle: {filename}...");
-                    YACFASubtitle.Repack(sourceFile);
+                    Console.WriteLine($"Repacking DebriefingSubtitle: {filename}...");
+                    YDebSub.Repack(sourceFile);
+                }
+                //else if (SoulsFormats.AC3.BND0.Is(sourceFile))
+                //{
+                //    Console.WriteLine($"Unpacking AC3 BND0: {filename}...");
+                //    var bnd0 = SoulsFormats.AC3.BND0.Read(sourceFile);
+                //    bnd0.Unpack(filename, targetDir, progress);
+                //}
+                else if (ANC.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking ANC: {filename}...");
+                    ANC anc = ANC.Read(sourceFile);
+                    anc.Unpack(filename, targetDir);
+                }
+                else if (MQB.Is(sourceFile))
+                {
+                    Console.WriteLine($"Converting MQB: {filename}...");
+                    MQB mqb = MQB.Read(sourceFile);
+                    mqb.Unpack(filename, sourceDir, progress);
+                }
+                else if (sourceFile.EndsWith(".mqb.xml"))
+                {
+                    Console.WriteLine($"Converting XML to MQB: {filename}...");
+                    YMQB.Repack(sourceFile);
                 }
                 else
                 {
@@ -365,6 +395,16 @@ namespace Yabber
             {
                 Console.WriteLine($"Repacking TPF: {sourceName}...");
                 YTPF.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists($"{sourceDir}\\_yabber-ac3bnd0.xml"))
+            {
+                Console.WriteLine($"Repacking AC3 BND0: {sourceName}...");
+                YAC3BND0.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists($"{sourceDir}\\_yabber-anc.xml"))
+            {
+                Console.WriteLine($"Repacking ANC: {sourceName}...");
+                YANC.Repack(sourceDir, targetDir);
             }
             else
             {

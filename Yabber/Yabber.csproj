@@ -60,6 +60,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -69,7 +70,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Formats\YACFASubtitle.cs" />
+    <Compile Include="Formats\YAC3BND0.cs" />
+    <Compile Include="Formats\YDebSub.cs" />
+    <Compile Include="Formats\YANC.cs" />
     <Compile Include="Formats\YBinder.cs" />
     <Compile Include="Formats\YBXF3.cs" />
     <Compile Include="Formats\YBXF4.cs" />
@@ -80,7 +83,8 @@
     <Compile Include="Formats\YFMG.cs" />
     <Compile Include="Formats\YLUAGNL.cs" />
     <Compile Include="Formats\YLUAINFO.cs" />
-    <Compile Include="Formats\YACPARTS.cs" />
+    <Compile Include="Formats\YAcPartsFA.cs" />
+    <Compile Include="Formats\YMQB.cs" />
     <Compile Include="Formats\YZero3.cs" />
     <Compile Include="FriendlyException.cs" />
     <Compile Include="Program.cs" />

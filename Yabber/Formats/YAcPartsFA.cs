@@ -1,12 +1,12 @@
-﻿using SoulsFormats.ACFA;
+﻿using SoulsFormats;
 using System;
 using System.IO;
 
 namespace Yabber
 {
-    static class YACPARTS
+    static class YAcPartsFA
     {
-        public static void Unpack(this ACPARTS ap, string targetDir, IProgress<float> progress)
+        public static void Unpack(this AcPartsFA ap, string targetDir, IProgress<float> progress)
         {
             Directory.CreateDirectory(targetDir);
             string headDir = $"{targetDir}\\Heads";
