@@ -324,23 +324,23 @@ namespace Yabber
                     Console.WriteLine("Armored Core 5thgen AcParts has not been implemented yet.");
                     return true;
                 }
-                //else if (DebriefingSubtitle.Is(sourceFile))
-                //{
-                //    Console.WriteLine($"Unpacking DebriefingSubtitle: {filename}...");
-                //    DebriefingSubtitle sub = DebriefingSubtitle.Read(sourceFile);
-                //    sub.Unpack(filename, sourceDir, progress);
-                //}
+                else if (DebriefingSubtitle.Match(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking DebriefingSubtitle: {filename}...");
+                    DebriefingSubtitle sub = DebriefingSubtitle.Read(sourceFile);
+                    sub.Unpack(filename, sourceDir, progress);
+                }
                 else if (sourceFile.EndsWith(".DebSub.xml"))
                 {
                     Console.WriteLine($"Repacking DebriefingSubtitle: {filename}...");
                     YDebSub.Repack(sourceFile);
                 }
-                //else if (SoulsFormats.AC3.BND0.Is(sourceFile))
-                //{
-                //    Console.WriteLine($"Unpacking AC3 BND0: {filename}...");
-                //    var bnd0 = SoulsFormats.AC3.BND0.Read(sourceFile);
-                //    bnd0.Unpack(filename, targetDir, progress);
-                //}
+                else if (SoulsFormats.AC3.BND0.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking AC3 BND0: {filename}...");
+                    var bnd0 = SoulsFormats.AC3.BND0.Read(sourceFile);
+                    bnd0.Unpack(filename, targetDir, progress);
+                }
                 else if (ANC.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking ANC: {filename}...");

@@ -4,9 +4,9 @@ using System.IO;
 
 namespace Yabber
 {
-    static class YAcPartsFA
+    static class YAcParts4
     {
-        public static void Unpack(this AcPartsFA ap, string targetDir, IProgress<float> progress)
+        public static void Unpack(this AcParts4 ap, string targetDir, IProgress<float> progress)
         {
             Directory.CreateDirectory(targetDir);
             string headDir = $"{targetDir}\\Heads";

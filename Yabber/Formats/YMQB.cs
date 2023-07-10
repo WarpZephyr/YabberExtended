@@ -1,6 +1,8 @@
 ﻿using SoulsFormats;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -59,7 +61,13 @@ namespace Yabber
             xw.WriteStartElement($"CustomData");
             xw.WriteElementString("Name", $"{customdata.Name}");
             xw.WriteElementString("Type", $"{customdata.Type}");
-            xw.WriteElementString("Value", $"{customdata.Value}");
+
+            switch (customdata.Type)
+            {
+                case MQB.CustomData.DataType.Vector3: xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString()); break;
+                default: xw.WriteElementString("Value", $"{customdata.Value}");  break;
+            }
+
             xw.WriteElementString("Unk44", $"{customdata.Unk44}");
                 xw.WriteStartElement("Sequences");
                 foreach (var sequence in customdata.Sequences)
@@ -168,10 +176,12 @@ namespace Yabber
             xml.Load(sourceFile);
 
             string name = xml.SelectSingleNode("MQB/Name").InnerText;
-            var version = (MQB.MQBVersion)Enum.Parse(typeof(MQB.MQBVersion), xml.SelectSingleNode("MQB/Version").InnerText);
-            float framerate = float.Parse(xml.SelectSingleNode("MQB/Framerate").InnerText);
-            bool bigendian = bool.Parse(xml.SelectSingleNode("MQB/BigEndian").InnerText);
-            Enum.TryParse(xml.SelectSingleNode("MQB/Compression")?.InnerText ?? "None", out DCX.Type compression);
+            var version = FriendlyParseEnum<MQB.MQBVersion>(nameof(MQB), nameof(MQB.Version), xml.SelectSingleNode("MQB/Version").InnerText);
+            float framerate = FriendlyParseFloat32(nameof(MQB), nameof(MQB.Framerate), xml.SelectSingleNode("MQB/Framerate").InnerText);
+            bool bigendian = FriendlyParseBool(nameof(MQB), nameof(MQB.BigEndian), xml.SelectSingleNode("MQB/BigEndian").InnerText);
+            if (!Enum.TryParse(xml.SelectSingleNode("MQB/Compression")?.InnerText ?? "None", out DCX.Type compression))
+                throw new FriendlyException($"{nameof(MQB)} {nameof(MQB.Compression)} could not be parsed.");
+
             string resDir = xml.SelectSingleNode("MQB/ResourceDirectory").InnerText;
             List<MQB.Resource> resources = new List<MQB.Resource>();
             List<MQB.Cut> cuts = new List<MQB.Cut>();
@@ -206,8 +216,8 @@ namespace Yabber
 
             string name = resNode.SelectSingleNode("Name").InnerText;
             string path = resNode.SelectSingleNode("Path").InnerText;
-            int parentIndex = int.Parse(resNode.SelectSingleNode("ParentIndex").InnerText);
-            int unk48 = int.Parse(resNode.SelectSingleNode("Unk48").InnerText);
+            int parentIndex = FriendlyParseInt32(nameof(MQB.Resource), nameof(MQB.Resource.ParentIndex), resNode.SelectSingleNode("ParentIndex").InnerText);
+            int unk48 = FriendlyParseInt32(nameof(MQB.Resource), nameof(MQB.Resource.Unk48), resNode.SelectSingleNode("Unk48").InnerText);
             List<MQB.CustomData> customData = new List<MQB.CustomData>();
 
             var resCusDataNode = resNode.SelectSingleNode("Resource_CustomData");
@@ -227,9 +237,9 @@ namespace Yabber
             MQB.CustomData customdata = new MQB.CustomData();
 
             string name = customdataNode.SelectSingleNode("Name").InnerText;
-            var type = (MQB.CustomData.DataType)Enum.Parse(typeof (MQB.CustomData.DataType), customdataNode.SelectSingleNode("Type").InnerText);
+            var type = FriendlyParseEnum<MQB.CustomData.DataType>(nameof(MQB.CustomData), nameof(MQB.CustomData.Type), customdataNode.SelectSingleNode("Type").InnerText);
             object value = ConvertValueToDataType(customdataNode.SelectSingleNode("Value").InnerText, type);
-            int unk44 = int.Parse(customdataNode.SelectSingleNode("Unk44").InnerText);
+            int unk44 = FriendlyParseInt32(nameof(MQB.CustomData), nameof(MQB.CustomData.Unk44), customdataNode.SelectSingleNode("Unk44").InnerText);
             List<MQB.CustomData.Sequence> sequences = new List<MQB.CustomData.Sequence>();
 
             var seqsNode = customdataNode.SelectSingleNode("Sequences");
@@ -248,14 +258,14 @@ namespace Yabber
         {
             MQB.CustomData.Sequence sequence = new MQB.CustomData.Sequence();
 
-            int valueIndex = int.Parse(seqNode.SelectSingleNode("ValueIndex").InnerText);
-            var type = (MQB.CustomData.DataType)Enum.Parse(typeof(MQB.CustomData.DataType), seqNode.SelectSingleNode("ValueType").InnerText);
-            int pointType = int.Parse(seqNode.SelectSingleNode("PointType").InnerText);
+            int valueIndex = FriendlyParseInt32(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.ValueIndex), seqNode.SelectSingleNode("ValueIndex").InnerText);
+            var type = FriendlyParseEnum<MQB.CustomData.DataType>(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.ValueType), seqNode.SelectSingleNode("ValueType").InnerText);
+            int pointType = FriendlyParseInt32(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.PointType), seqNode.SelectSingleNode("PointType").InnerText);
             List<MQB.CustomData.Sequence.Point> points = new List<MQB.CustomData.Sequence.Point>();
 
             var pointsNode = seqNode.SelectSingleNode("Points");
             foreach (XmlNode pointNode in pointsNode.SelectNodes("Point"))
-                points.Add(RepackPoint(pointNode));
+                points.Add(RepackPoint(pointNode, type));
 
             sequence.ValueIndex = valueIndex;
             sequence.ValueType = type;
@@ -264,14 +274,23 @@ namespace Yabber
             return sequence;
         }
 
-        public static MQB.CustomData.Sequence.Point RepackPoint(XmlNode pointNode)
+        public static MQB.CustomData.Sequence.Point RepackPoint(XmlNode pointNode, MQB.CustomData.DataType type)
         {
             MQB.CustomData.Sequence.Point point = new MQB.CustomData.Sequence.Point();
 
-            object value = pointNode.SelectSingleNode("Value").InnerText;
-            int unk08 = int.Parse(pointNode.SelectSingleNode("Unk08").InnerText);
-            int unk10 = int.Parse(pointNode.SelectSingleNode("Unk10").InnerText);
-            int unk14 = int.Parse(pointNode.SelectSingleNode("Unk14").InnerText);
+            string valueStr = pointNode.SelectSingleNode("Value").InnerText;
+            object value;
+
+            switch (type)
+            {
+                case MQB.CustomData.DataType.Byte: value = FriendlyParseByte(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Value), valueStr); break;
+                case MQB.CustomData.DataType.Float: value = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Value), valueStr); break;
+                default: throw new NotSupportedException($"Unsupported sequence point value type: {type}");
+            }
+
+            int unk08 = FriendlyParseInt32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk08), pointNode.SelectSingleNode("Unk08").InnerText);
+            float unk10 = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk10), pointNode.SelectSingleNode("Unk10").InnerText);
+            float unk14 = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk14), pointNode.SelectSingleNode("Unk14").InnerText);
 
             point.Value = value;
             point.Unk08 = unk08;
@@ -285,8 +304,8 @@ namespace Yabber
             MQB.Cut cut = new MQB.Cut();
 
             string name = cutNode.SelectSingleNode("Name").InnerText;
-            int duration = int.Parse(cutNode.SelectSingleNode("Duration").InnerText);
-            int unk44 = int.Parse(cutNode.SelectSingleNode("Unk44").InnerText);
+            int duration = FriendlyParseInt32("Cut", nameof(cut.Duration), cutNode.SelectSingleNode("Duration").InnerText);
+            int unk44 = FriendlyParseInt32("Cut", nameof(cut.Unk44), cutNode.SelectSingleNode("Unk44").InnerText);
             List<MQB.Timeline> timelines = new List<MQB.Timeline>();
 
             var timelinesNode = cutNode.SelectSingleNode("Timelines");
@@ -304,7 +323,7 @@ namespace Yabber
         {
             MQB.Timeline timeline = new MQB.Timeline();
 
-            int unk10 = int.Parse(timelineNode.SelectSingleNode("Unk10").InnerText);
+            int unk10 = FriendlyParseInt32(nameof(MQB.Timeline), nameof(MQB.Timeline.Unk10), timelineNode.SelectSingleNode("Unk10").InnerText);
             List<MQB.Disposition> dispositions = new List<MQB.Disposition>();
             List<MQB.CustomData> customdata = new List<MQB.CustomData>();
 
@@ -326,16 +345,16 @@ namespace Yabber
         {
             MQB.Disposition disposition = new MQB.Disposition();
 
-            int id = int.Parse(disNode.SelectSingleNode("ID").InnerText);
-            int duration = int.Parse(disNode.SelectSingleNode("Duration").InnerText);
-            int resIndex = int.Parse(disNode.SelectSingleNode("ResourceIndex").InnerText);
-            int startFrame = int.Parse(disNode.SelectSingleNode("StartFrame").InnerText);
-            int unk08 = int.Parse(disNode.SelectSingleNode("Unk08").InnerText);
-            int unk14 = int.Parse(disNode.SelectSingleNode("Unk14").InnerText);
-            int unk18 = int.Parse(disNode.SelectSingleNode("Unk18").InnerText);
-            int unk1C = int.Parse(disNode.SelectSingleNode("Unk1C").InnerText);
-            int unk20 = int.Parse(disNode.SelectSingleNode("Unk20").InnerText);
-            int unk28 = int.Parse(disNode.SelectSingleNode("Unk28").InnerText);
+            int id = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.ID), disNode.SelectSingleNode("ID").InnerText);
+            int duration = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Duration), disNode.SelectSingleNode("Duration").InnerText);
+            int resIndex = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.ResourceIndex), disNode.SelectSingleNode("ResourceIndex").InnerText);
+            int startFrame = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.StartFrame), disNode.SelectSingleNode("StartFrame").InnerText);
+            int unk08 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk08), disNode.SelectSingleNode("Unk08").InnerText);
+            int unk14 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk14), disNode.SelectSingleNode("Unk14").InnerText);
+            int unk18 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk18), disNode.SelectSingleNode("Unk18").InnerText);
+            int unk1C = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk1C), disNode.SelectSingleNode("Unk1C").InnerText);
+            int unk20 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk20), disNode.SelectSingleNode("Unk20").InnerText);
+            int unk28 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk28), disNode.SelectSingleNode("Unk28").InnerText);
             List<MQB.Transform> transforms = new List<MQB.Transform>();
             List<MQB.CustomData> customdata = new List<MQB.CustomData>();
 
@@ -366,16 +385,16 @@ namespace Yabber
         {
             MQB.Transform transform = new MQB.Transform();
 
-            float frame = float.Parse(transNode.SelectSingleNode("Frame").InnerText);
-            Vector3 translation = transNode.SelectSingleNode("Translation").InnerText.ToVector3();
-            Vector3 rotation = transNode.SelectSingleNode("Rotation").InnerText.ToVector3();
-            Vector3 scale = transNode.SelectSingleNode("Scale").InnerText.ToVector3();
-            Vector3 unk10 = transNode.SelectSingleNode("Unk10").InnerText.ToVector3();
-            Vector3 unk1C = transNode.SelectSingleNode("Unk1C").InnerText.ToVector3();
-            Vector3 unk34 = transNode.SelectSingleNode("Unk34").InnerText.ToVector3();
-            Vector3 unk40 = transNode.SelectSingleNode("Unk40").InnerText.ToVector3();
-            Vector3 unk58 = transNode.SelectSingleNode("Unk58").InnerText.ToVector3();
-            Vector3 unk64 = transNode.SelectSingleNode("Unk64").InnerText.ToVector3();
+            float frame = FriendlyParseFloat32(nameof(MQB.Transform), nameof(MQB.Transform.Frame), transNode.SelectSingleNode("Frame").InnerText);
+            Vector3 translation = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Translation), transNode.SelectSingleNode("Translation").InnerText);
+            Vector3 rotation = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Rotation), transNode.SelectSingleNode("Rotation").InnerText);
+            Vector3 scale = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Scale), transNode.SelectSingleNode("Scale").InnerText);
+            Vector3 unk10 = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk10), transNode.SelectSingleNode("Unk10").InnerText);
+            Vector3 unk1C = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk1C), transNode.SelectSingleNode("Unk1C").InnerText);
+            Vector3 unk34 = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk34), transNode.SelectSingleNode("Unk34").InnerText);
+            Vector3 unk40 = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk40), transNode.SelectSingleNode("Unk40").InnerText);
+            Vector3 unk58 = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk58), transNode.SelectSingleNode("Unk58").InnerText);
+            Vector3 unk64 = FriendlyParseVector3(nameof(MQB.Transform), nameof(MQB.Transform.Unk64), transNode.SelectSingleNode("Unk64").InnerText);
 
             transform.Frame = frame;
             transform.Translation = translation;
@@ -414,20 +433,28 @@ namespace Yabber
 
         public static object ConvertValueToDataType(string str, MQB.CustomData.DataType type)
         {
-            object value = str;
-            switch (type)
+            try
             {
-                case MQB.CustomData.DataType.Bool: return Convert.ToBoolean(value);
-                case MQB.CustomData.DataType.SByte: return Convert.ToSByte(value);
-                case MQB.CustomData.DataType.Byte: return Convert.ToByte(value);
-                case MQB.CustomData.DataType.Short: return Convert.ToInt16(value);
-                case MQB.CustomData.DataType.Int: return Convert.ToInt32(value);
-                case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(value);
-                case MQB.CustomData.DataType.Float: return Convert.ToSingle(value);
-                case MQB.CustomData.DataType.String: return str;
-                case MQB.CustomData.DataType.Custom: return (byte[])value;
-                case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
-                default: throw new NotImplementedException($"Unimplemented custom data type: {type}");
+                object value = str;
+                switch (type)
+                {
+                    case MQB.CustomData.DataType.Bool: return Convert.ToBoolean(value);
+                    case MQB.CustomData.DataType.SByte: return Convert.ToSByte(value);
+                    case MQB.CustomData.DataType.Byte: return Convert.ToByte(value);
+                    case MQB.CustomData.DataType.Short: return Convert.ToInt16(value);
+                    case MQB.CustomData.DataType.Int: return Convert.ToInt32(value);
+                    case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(value);
+                    case MQB.CustomData.DataType.Float: return Convert.ToSingle(value);
+                    case MQB.CustomData.DataType.String: return str;
+                    case MQB.CustomData.DataType.Custom: return (byte[])value;
+                    case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
+                    case MQB.CustomData.DataType.Vector3: return str.ToVector3();
+                    default: throw new NotImplementedException($"Unimplemented custom data type: {type}");
+                }
+            }
+            catch
+            {
+                throw new FriendlyException($"The value \"{str}\" could not be converted to the type {type} during custom data repacking.");
             }
         }
 
@@ -445,6 +472,142 @@ namespace Yabber
             int green = int.Parse(greenStr);
             int blue = int.Parse(blueStr);
             return Color.FromArgb(alpha, red, green, blue);
+        }
+
+        public static byte FriendlyParseByte(string parentName, string valueName, string value)
+        {
+            try
+            {
+                return byte.Parse(value);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} is a number, but its value \"{value}\" could not be read as a number.");
+            }
+            catch (OverflowException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} with value \"{value}\" caused an overflow error, it may be too large or too small.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
+        }
+
+        public static bool FriendlyParseBool(string parentName, string valueName, string value)
+        {
+            try
+            {
+                return bool.Parse(value);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} is a True or False, but its value \"{value}\" could not be read as a True or False.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
+        }
+
+        public static int FriendlyParseInt32(string parentName, string valueName, string value)
+        {
+            try
+            {
+                return int.Parse(value);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} is a number, but its value \"{value}\" could not be read as a number.");
+            }
+            catch (OverflowException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} with value \"{value}\" caused an overflow error, it may be too large or too small.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
+        }
+
+        public static float FriendlyParseFloat32(string parentName, string valueName, string value)
+        {
+            try
+            {
+                return float.Parse(value);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} is a number, but its value \"{value}\" could not be read as a number.");
+            }
+            catch (OverflowException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} with value \"{value}\" caused an overflow error, it may be too large or too small.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
+        }
+
+        public static Vector3 FriendlyParseVector3(string parentName, string valueName, string value)
+        {
+            try
+            {
+                return value.ToVector3();
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} is a vector, but its value \"{value}\" could not be parsed as one. Example how format should be: 1 1 1");
+            }
+            catch (OverflowException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} with value \"{value}\" caused an overflow error, it may be too large or too small.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
+        }
+
+        public static TEnum FriendlyParseEnum<TEnum>(string parentName, string valueName, string value) where TEnum : Enum
+        {
+            try
+            {
+                return (TEnum)Enum.Parse(typeof(TEnum), value);
+            }
+            catch (OverflowException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} with value \"{value}\" caused an overflow error, it may be too large or too small.");
+            }
+            catch (ArgumentNullException)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had a null value, make sure it exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
+            }
         }
 
         #endregion
