@@ -148,6 +148,8 @@ namespace Yabber
                         texture.Header.TextureCount = textureCount;
                         texture.Header.Unk2 = unk2;
                     }
+
+                    texture.Bytes = texture.Deheaderize();
                 }
 
                 texture.FloatStruct = floatStruct;
