@@ -5,16 +5,16 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Yabber")]
+[assembly: AssemblyTitle("YabberExtended")]
 [assembly: AssemblyDescription("Unpacker/repacker for FromSoftware file formats.")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
 [assembly: AssemblyConfiguration("Release")]
 #endif
-[assembly: AssemblyCompany("JKAnderson")]
-[assembly: AssemblyProduct("Yabber")]
-[assembly: AssemblyCopyright("Copyright © Joseph Anderson 2018")]
+[assembly: AssemblyCompany("WarpZephyr")]
+[assembly: AssemblyProduct("YabberExtended")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
