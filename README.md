@@ -6,8 +6,8 @@ Also does not support encrypted files (enc_regulation.bnd.dcx in DS2, Data0.bdt 
 Requires [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472) - Windows 10 users should already have this.  
 [NexusMods Page](https://www.nexusmods.com/sekiro/mods/42)  
 
-Please see the included readme for detailed instructions.
-Forked by WarpZephyr from original project by TKGP:
+Please see the included readme for detailed instructions.  
+Forked by WarpZephyr from original project by TKGP:  
 https://github.com/JKAnderson/Yabber
 
 # Contributors
