@@ -629,14 +629,23 @@ namespace YabberExtended
 
             if (hex.Length == 0)
             {
-                hex = "00";
-                Console.WriteLine("Warning: Hex string was empty, adding 00...");
+                hex = "00000000";
+                Console.WriteLine("Warning: Hex string was empty, adding 00000000...");
             }
 
             if (hex.Length % 2 != 0)
             {
                 hex += "0";
                 Console.WriteLine("Warning: Hex string was not divisible by 2, adding 0...");
+            }
+
+            if (hex.Length / 2 % 4 != 0)
+            {
+                while (hex.Length / 2 % 4 != 0)
+                {
+                    hex += "00";
+                }
+                Console.WriteLine("Warning: Hex string was not divisible by 4 for Custom type of CustomData, added 00 until it was.");
             }
 
             try
