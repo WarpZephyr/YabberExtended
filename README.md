@@ -11,8 +11,8 @@ Forked by WarpZephyr from original project by TKGP:
 https://github.com/JKAnderson/Yabber
 
 # Contributors
-*katalash* - GPARAM support on Yabber
-*TKGP* - Original Yabber
+*katalash* - GPARAM support on Yabber  
+*TKGP* - Original Yabber  
 *WarpZephyr* - MQB Support and various misc Armored Core Formats.
 
 # Changelog
