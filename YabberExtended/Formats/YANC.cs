@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-namespace Yabber.Formats
+namespace YabberExtended.Formats
 {
     static class YANC
     {

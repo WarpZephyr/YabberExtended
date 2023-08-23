@@ -9,7 +9,7 @@ using System.Numerics;
 using System.Text;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YMQB
     {
@@ -452,7 +452,7 @@ namespace Yabber
                     case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(value);
                     case MQB.CustomData.DataType.Float: return Convert.ToSingle(value);
                     case MQB.CustomData.DataType.String: return str;
-                    case MQB.CustomData.DataType.Custom: return str.HexToByteArray();
+                    case MQB.CustomData.DataType.Custom: return str.FriendlyHexToByteArray();
                     case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
                     case MQB.CustomData.DataType.Vector3: return str.ToVector3();
                     default: throw new NotImplementedException($"Unimplemented custom data type: {type}");

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YBUtil
     {

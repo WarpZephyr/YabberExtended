@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YTPF
     {

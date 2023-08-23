@@ -6,7 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YGPARAM
     {

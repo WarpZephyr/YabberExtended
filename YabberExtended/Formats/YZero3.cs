@@ -1,7 +1,7 @@
 ﻿using SoulsFormats.AC4;
 using System.IO;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YZero3
     {

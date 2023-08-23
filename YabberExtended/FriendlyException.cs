@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Yabber
+namespace YabberExtended
 {
     class FriendlyException : Exception
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace Yabber.Formats
+namespace YabberExtended.Formats
 {
     static class YAC3BND0
     {

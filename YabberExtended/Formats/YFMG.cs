@@ -2,7 +2,7 @@
 using System;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YFMG
     {

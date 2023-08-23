@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Yabber.Context
+namespace YabberExtended.Context
 {
     class Program
     {
@@ -12,7 +12,7 @@ namespace Yabber.Context
             Assembly assembly = Assembly.GetExecutingAssembly();
             Console.Write(
                 $"{assembly.GetName().Name} {assembly.GetName().Version}\n\n" +
-                "This program will register Yabber.exe and Yabber.DCX.exe\n" +
+                "This program will register YabberExtended.exe and YabberExtended.DCX.exe\n" +
                 "so that they can be run by right-clicking on a file or folder.\n" +
                 "Enter R to register, U to unregister, or anything else to exit.\n" +
                 "> ");
@@ -26,29 +26,29 @@ namespace Yabber.Context
                     RegistryKey classes = Registry.CurrentUser.OpenSubKey("Software\\Classes", true);
                     if (choice == "R")
                     {
-                        string yabberPath = Path.GetFullPath("Yabber.exe");
-                        RegistryKey yabberFileKey = classes.CreateSubKey("*\\shell\\yabber");
+                        string yabberPath = Path.GetFullPath("YabberExtended.exe");
+                        RegistryKey yabberFileKey = classes.CreateSubKey("*\\shell\\yabberextended");
                         RegistryKey yabberFileCommand = yabberFileKey.CreateSubKey("command");
-                        yabberFileKey.SetValue(null, "Yabber");
+                        yabberFileKey.SetValue(null, "YabberExtended");
                         yabberFileCommand.SetValue(null, $"\"{yabberPath}\" \"%1\"");
-                        RegistryKey yabberDirKey = classes.CreateSubKey("directory\\shell\\yabber");
+                        RegistryKey yabberDirKey = classes.CreateSubKey("directory\\shell\\yabberextended");
                         RegistryKey yabberDirCommand = yabberDirKey.CreateSubKey("command");
-                        yabberDirKey.SetValue(null, "Yabber");
+                        yabberDirKey.SetValue(null, "YabberExtended");
                         yabberDirCommand.SetValue(null, $"\"{yabberPath}\" \"%1\"");
 
-                        string dcxPath = Path.GetFullPath("Yabber.DCX.exe");
-                        RegistryKey dcxFileKey = classes.CreateSubKey("*\\shell\\yabberdcx");
+                        string dcxPath = Path.GetFullPath("YabberExtended.DCX.exe");
+                        RegistryKey dcxFileKey = classes.CreateSubKey("*\\shell\\yabberextendeddcx");
                         RegistryKey dcxFileCommand = dcxFileKey.CreateSubKey("command");
-                        dcxFileKey.SetValue(null, "Yabber.DCX");
+                        dcxFileKey.SetValue(null, "YabberExtended.DCX");
                         dcxFileCommand.SetValue(null, $"\"{dcxPath}\" \"%1\"");
 
                         Console.WriteLine("Programs registered!");
                     }
                     else if (choice == "U")
                     {
-                        classes.DeleteSubKeyTree("*\\shell\\yabber", false);
-                        classes.DeleteSubKeyTree("directory\\shell\\yabber", false);
-                        classes.DeleteSubKeyTree("*\\shell\\yabberdcx", false);
+                        classes.DeleteSubKeyTree("*\\shell\\yabberextended", false);
+                        classes.DeleteSubKeyTree("directory\\shell\\yabberextended", false);
+                        classes.DeleteSubKeyTree("*\\shell\\yabberextendeddcx", false);
                         Console.WriteLine("Programs unregistered.");
                     }
                 }

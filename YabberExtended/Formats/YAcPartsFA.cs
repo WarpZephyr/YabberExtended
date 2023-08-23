@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YAcParts4
     {

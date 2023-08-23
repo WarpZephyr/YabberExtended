@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml;
 using SoulsFormats;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YDebSub
     {

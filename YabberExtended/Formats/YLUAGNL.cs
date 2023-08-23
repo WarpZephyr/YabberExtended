@@ -1,7 +1,7 @@
 ﻿using SoulsFormats;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YLUAGNL
     {

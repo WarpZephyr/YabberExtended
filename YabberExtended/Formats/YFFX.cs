@@ -1,7 +1,7 @@
 ﻿using SoulsFormats;
 using System.IO;
 
-namespace Yabber
+namespace YabberExtended
 {
     static class YFFX
     {

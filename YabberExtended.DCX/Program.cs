@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace Yabber
+namespace YabberExtended
 {
     class Program
     {
@@ -16,7 +16,7 @@ namespace Yabber
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 Console.WriteLine(
                     $"{assembly.GetName().Name} {assembly.GetName().Version}\n\n" +
-                    "Yabber.DCX has no GUI.\n" +
+                    "YabberExtended.DCX has no GUI.\n" +
                     "Drag and drop a DCX onto the exe to decompress it,\n" +
                     "or a decompressed file to recompress it.\n\n" +
                     "Press any key to exit."
