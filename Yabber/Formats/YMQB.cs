@@ -1,12 +1,11 @@
 ﻿using SoulsFormats;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Numerics;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Xml;
 
@@ -28,14 +27,14 @@ namespace Yabber
             xw.WriteElementString("BigEndian", mqb.BigEndian.ToString());
             xw.WriteElementString("Compression", mqb.Compression.ToString());
             xw.WriteElementString("ResourceDirectory", mqb.ResourceDirectory);
-                xw.WriteStartElement("Resources");
-                foreach (var resource in mqb.Resources)
-                    UnpackResource(xw, resource);
-                xw.WriteEndElement();
-                xw.WriteStartElement("Cuts");
-                foreach (var cut in mqb.Cuts)
-                    UnpackCut(xw, cut);
-                xw.WriteEndElement();
+            xw.WriteStartElement("Resources");
+            foreach (var resource in mqb.Resources)
+                UnpackResource(xw, resource);
+            xw.WriteEndElement();
+            xw.WriteStartElement("Cuts");
+            foreach (var cut in mqb.Cuts)
+                UnpackCut(xw, cut);
+            xw.WriteEndElement();
             xw.WriteEndElement();
             xw.Close();
         }
@@ -49,10 +48,10 @@ namespace Yabber
             xw.WriteElementString("Path", $"{resource.Path}");
             xw.WriteElementString("ParentIndex", $"{resource.ParentIndex}");
             xw.WriteElementString("Unk48", $"{resource.Unk48}");
-                xw.WriteStartElement("Resource_CustomData");
-                foreach (var customdata in resource.CustomData)
-                    UnpackCustomData(xw, customdata);
-                xw.WriteEndElement();
+            xw.WriteStartElement("Resource_CustomData");
+            foreach (var customdata in resource.CustomData)
+                UnpackCustomData(xw, customdata);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -64,15 +63,22 @@ namespace Yabber
 
             switch (customdata.Type)
             {
-                case MQB.CustomData.DataType.Vector3: xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString()); break;
-                default: xw.WriteElementString("Value", $"{customdata.Value}");  break;
+                case MQB.CustomData.DataType.Vector3:
+                    xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString());
+                    break;
+                case MQB.CustomData.DataType.Custom:
+                    xw.WriteElementString("Value", ((byte[])customdata.Value).ToHexString());
+                    break;
+                default:
+                    xw.WriteElementString("Value", $"{customdata.Value}");
+                    break;
             }
 
             xw.WriteElementString("Unk44", $"{customdata.Unk44}");
-                xw.WriteStartElement("Sequences");
-                foreach (var sequence in customdata.Sequences)
-                    UnpackSequence(xw, sequence);
-                xw.WriteEndElement();
+            xw.WriteStartElement("Sequences");
+            foreach (var sequence in customdata.Sequences)
+                UnpackSequence(xw, sequence);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -82,10 +88,10 @@ namespace Yabber
             xw.WriteElementString("ValueIndex", $"{sequence.ValueIndex}");
             xw.WriteElementString("ValueType", $"{sequence.ValueType}");
             xw.WriteElementString("PointType", $"{sequence.PointType}");
-                xw.WriteStartElement("Points");
-                foreach (var point in sequence.Points)
-                    UnpackPoint(xw, point);
-                xw.WriteEndElement();
+            xw.WriteStartElement("Points");
+            foreach (var point in sequence.Points)
+                UnpackPoint(xw, point);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -105,10 +111,10 @@ namespace Yabber
             xw.WriteElementString("Name", $"{cut.Name}");
             xw.WriteElementString("Duration", $"{cut.Duration}");
             xw.WriteElementString("Unk44", $"{cut.Unk44}");
-                xw.WriteStartElement($"Timelines");
-                foreach (var timeline in cut.Timelines)
-                    UnpackTimeline(xw, timeline);
-                xw.WriteEndElement();
+            xw.WriteStartElement($"Timelines");
+            foreach (var timeline in cut.Timelines)
+                UnpackTimeline(xw, timeline);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -116,14 +122,14 @@ namespace Yabber
         {
             xw.WriteStartElement($"Timeline");
             xw.WriteElementString("Unk10", $"{timeline.Unk10}");
-                xw.WriteStartElement($"Dispositions");
-                foreach (var disposition in timeline.Dispositions)
-                    UnpackDisposition(xw, disposition);
-                xw.WriteEndElement();
-                xw.WriteStartElement($"Timeline_CustomData");
-                foreach (var customdata in timeline.CustomData)
-                    UnpackCustomData(xw, customdata);
-                xw.WriteEndElement();
+            xw.WriteStartElement($"Dispositions");
+            foreach (var disposition in timeline.Dispositions)
+                UnpackDisposition(xw, disposition);
+            xw.WriteEndElement();
+            xw.WriteStartElement($"Timeline_CustomData");
+            foreach (var customdata in timeline.CustomData)
+                UnpackCustomData(xw, customdata);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -140,14 +146,14 @@ namespace Yabber
             xw.WriteElementString("Unk1C", $"{disposition.Unk1C}");
             xw.WriteElementString("Unk20", $"{disposition.Unk20}");
             xw.WriteElementString("Unk28", $"{disposition.Unk28}");
-                xw.WriteStartElement($"Transforms");
-                foreach (var transform in disposition.Transforms)
-                    UnpackTransform(xw, transform);
-                xw.WriteEndElement();
-                xw.WriteStartElement($"Disposition_CustomData");
-                foreach (var customdata in disposition.CustomData)
-                    UnpackCustomData(xw, customdata);
-                xw.WriteEndElement();
+            xw.WriteStartElement($"Transforms");
+            foreach (var transform in disposition.Transforms)
+                UnpackTransform(xw, transform);
+            xw.WriteEndElement();
+            xw.WriteStartElement($"Disposition_CustomData");
+            foreach (var customdata in disposition.CustomData)
+                UnpackCustomData(xw, customdata);
+            xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
@@ -222,7 +228,7 @@ namespace Yabber
 
             var resCusDataNode = resNode.SelectSingleNode("Resource_CustomData");
             foreach (XmlNode cusDataNode in resCusDataNode.SelectNodes("CustomData"))
-                customData.Add(RepackCustomData(resNode));
+                customData.Add(RepackCustomData(cusDataNode));
 
             resource.Name = name;
             resource.Path = path;
@@ -428,7 +434,7 @@ namespace Yabber
             float y = float.Parse(yStr);
             float z = float.Parse(zStr);
 
-            return new Vector3(x,y,z);
+            return new Vector3(x, y, z);
         }
 
         public static object ConvertValueToDataType(string str, MQB.CustomData.DataType type)
@@ -446,7 +452,7 @@ namespace Yabber
                     case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(value);
                     case MQB.CustomData.DataType.Float: return Convert.ToSingle(value);
                     case MQB.CustomData.DataType.String: return str;
-                    case MQB.CustomData.DataType.Custom: return (byte[])value;
+                    case MQB.CustomData.DataType.Custom: return str.HexToByteArray();
                     case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
                     case MQB.CustomData.DataType.Vector3: return str.ToVector3();
                     default: throw new NotImplementedException($"Unimplemented custom data type: {type}");
@@ -608,6 +614,68 @@ namespace Yabber
             {
                 throw new FriendlyException($"In a {parentName} {valueName} had an unknown error occur; Exception message: {ex.Message}");
             }
+        }
+
+        #endregion
+
+        #region Hex Helpers
+
+        public static byte[] FriendlyHexToByteArray(this string hex)
+        {
+            if (!IsValidHexString(hex))
+            {
+                throw new FriendlyException("A hex string in a CustomData's value could not be parsed as hex. Valid hex characters are: 0-9 A-F a-f");
+            }
+
+            if (hex.Length == 0)
+            {
+                hex = "00";
+                Console.WriteLine("Warning: Hex string was empty, adding 00...");
+            }
+
+            if (hex.Length % 2 != 0)
+            {
+                hex += "0";
+                Console.WriteLine("Warning: Hex string was not divisible by 2, adding 0...");
+            }
+
+            try
+            {
+                return hex.HexToByteArray();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An issue occurred in parsing a hex string into a byte array.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                throw;
+            }
+        }
+
+        public static bool IsValidHexString(IEnumerable<char> hexString)
+        {
+            return hexString.Select((char currentCharacter) =>
+                (currentCharacter >= '0' && currentCharacter <= '9')
+             || (currentCharacter >= 'a' && currentCharacter <= 'f')
+             || (currentCharacter >= 'A' && currentCharacter <= 'F')
+             ).All((bool isHexCharacter) => isHexCharacter);
+        }
+
+        public static string ToHexString(this byte[] bytes)
+        {
+            StringBuilder hex = new StringBuilder(bytes.Length * 2);
+            foreach (byte b in bytes)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString().ToUpper();
+        }
+
+        public static byte[] HexToByteArray(this string hex)
+        {
+            int charLength = hex.Length;
+            byte[] bytes = new byte[charLength / 2];
+            for (int i = 0; i < charLength; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
 
         #endregion
