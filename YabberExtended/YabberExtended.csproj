@@ -70,8 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Formats\YAC3BND0.cs" />
-    <Compile Include="Formats\YDebSub.cs" />
+    <Compile Include="Formats\YBND2.cs" />
     <Compile Include="Formats\YANC.cs" />
     <Compile Include="Formats\YBinder.cs" />
     <Compile Include="Formats\YBXF3.cs" />
@@ -83,7 +82,6 @@
     <Compile Include="Formats\YFMG.cs" />
     <Compile Include="Formats\YLUAGNL.cs" />
     <Compile Include="Formats\YLUAINFO.cs" />
-    <Compile Include="Formats\YAcPartsFA.cs" />
     <Compile Include="Formats\YMQB.cs" />
     <Compile Include="Formats\YZero3.cs" />
     <Compile Include="FriendlyException.cs" />

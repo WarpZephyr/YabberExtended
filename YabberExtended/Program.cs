@@ -122,7 +122,8 @@ namespace YabberExtended
         {
             string sourceDir = Path.GetDirectoryName(sourceFile);
             string filename = Path.GetFileName(sourceFile);
-            string targetDir = $"{sourceDir}\\{filename.Replace('.', '-')}";
+            string targetDir = Path.Combine(sourceDir, filename.Replace('.', '-'));
+
             if (File.Exists(targetDir))
                 targetDir += "-ybr";
 
@@ -199,6 +200,12 @@ namespace YabberExtended
                     {
                         bnd.Unpack(filename, targetDir, progress);
                     }
+                }
+                else if (BND2.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking BND2: {filename}...");
+                    var bnd2 = BND2.Read(sourceFile);
+                    bnd2.Unpack(filename, targetDir, progress);
                 }
                 else if (BXF3.IsBHD(sourceFile))
                 {
@@ -308,38 +315,18 @@ namespace YabberExtended
                 }
                 else if (filename == "acparts.bin" || filename == "enemyparts.bin" || filename == "stabilizer.bin")
                 {
-                    Console.WriteLine("Armored Core 4 AcParts has not been implemented yet.");
+                    Console.WriteLine("Armored Core 4 AcParts is not supported.");
                     return true;
                 }
                 else if (filename == "AcParts.bin" || filename == "EnemyParts.bin" || filename == "Stabilizer.bin")
                 {
-                    Console.WriteLine("AcParts support for Armored Core For Answer is not finished.");
-                    //Console.WriteLine($"Unpacking AcParts: {filename}...");
-                    //ACPARTS ap = ACPARTS.Read(sourceFile);
-                    //ap.Unpack(targetDir, progress);
+                    Console.WriteLine("AcParts support for Armored Core For Answer is not supported.");
                     return true;
                 }
                 else if (filename == "acvparts.bin")
                 {
-                    Console.WriteLine("Armored Core 5thgen AcParts has not been implemented yet.");
+                    Console.WriteLine("Armored Core 5thgen AcParts is not supported.");
                     return true;
-                }
-                else if (DebriefingSubtitle.Match(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking DebriefingSubtitle: {filename}...");
-                    DebriefingSubtitle sub = DebriefingSubtitle.Read(sourceFile);
-                    sub.Unpack(filename, sourceDir, progress);
-                }
-                else if (sourceFile.EndsWith(".DebSub.xml"))
-                {
-                    Console.WriteLine($"Repacking DebriefingSubtitle: {filename}...");
-                    YDebSub.Repack(sourceFile);
-                }
-                else if (SoulsFormats.AC3.BND0.Is(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking AC3 BND0: {filename}...");
-                    var bnd0 = SoulsFormats.AC3.BND0.Read(sourceFile);
-                    bnd0.Unpack(filename, targetDir, progress);
                 }
                 else if (ANC.Is(sourceFile))
                 {
@@ -371,7 +358,12 @@ namespace YabberExtended
         {
             string sourceName = new DirectoryInfo(sourceDir).Name;
             string targetDir = new DirectoryInfo(sourceDir).Parent.FullName;
-            if (File.Exists($"{sourceDir}\\_yabber-bnd3.xml"))
+            if (File.Exists($"{sourceDir}\\_yabber-bnd2.xml"))
+            {
+                Console.WriteLine($"Repacking BND2: {sourceName}...");
+                YBND2.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists($"{sourceDir}\\_yabber-bnd3.xml"))
             {
                 Console.WriteLine($"Repacking BND3: {sourceName}...");
                 YBND3.Repack(sourceDir, targetDir);
@@ -395,11 +387,6 @@ namespace YabberExtended
             {
                 Console.WriteLine($"Repacking TPF: {sourceName}...");
                 YTPF.Repack(sourceDir, targetDir);
-            }
-            else if (File.Exists($"{sourceDir}\\_yabber-ac3bnd0.xml"))
-            {
-                Console.WriteLine($"Repacking AC3 BND0: {sourceName}...");
-                YAC3BND0.Repack(sourceDir, targetDir);
             }
             else if (File.Exists($"{sourceDir}\\_yabber-anc.xml"))
             {

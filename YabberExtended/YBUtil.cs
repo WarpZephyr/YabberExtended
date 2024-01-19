@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -56,7 +57,7 @@ namespace YabberExtended
         /// </summary>
         public static string UnrootBNDPath(string path, out string root)
         {
-            root = "";
+            root = string.Empty;
             foreach (string pathRoot in pathRoots)
             {
                 if (path.ToLower().StartsWith(pathRoot.ToLower()))
@@ -88,10 +89,350 @@ namespace YabberExtended
             return path;
         }
 
+        public static string RemoveRootFromPath(string path)
+        {
+            if (Path.IsPathRooted(path))
+            {
+                path = path.Substring(2);
+            }
+
+            return RemoveLeadingSlashes(path);
+        }
+
+        public static string RemoveLeadingSlashes(string path)
+        {
+            while (!string.IsNullOrEmpty(path) && (path[0] == '/' || path[0] == '\\'))
+            {
+                path = path.Substring(1);
+            }
+            return path;
+        }
+
         public static void Backup(string path)
         {
             if (File.Exists(path) && !File.Exists(path + ".bak"))
                 File.Move(path, path + ".bak");
+        }
+
+        public static string CorrectDirectorySeparator(string path)
+        {
+            return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+        }
+
+        public static sbyte FieldToSByte(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return sbyte.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 8-bit number.");
+            }
+        }
+
+        public static sbyte FieldToSByte(string str, string name, sbyte defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return sbyte.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 8-bit number.");
+            }
+        }
+
+        public static byte FieldToByte(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return byte.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 8-bit number.");
+            }
+        }
+
+        public static byte FieldToByte(string str, string name, byte defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return byte.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 8-bit number.");
+            }
+        }
+
+        public static short FieldToInt16(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return short.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 16-bit number.");
+            }
+        }
+
+        public static short FieldToInt16(string str, string name, short defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return short.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 16-bit number.");
+            }
+        }
+
+        public static ushort FieldToUInt16(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return ushort.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 16-bit number.");
+            }
+        }
+
+        public static ushort FieldToInt16(string str, string name, ushort defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return ushort.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 16-bit number.");
+            }
+        }
+
+        public static int FieldToInt32(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return int.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 32-bit number.");
+            }
+        }
+
+        public static int FieldToInt32(string str, string name, int defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return int.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 32-bit number.");
+            }
+        }
+
+        public static uint FieldToUInt32(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return uint.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 32-bit number.");
+            }
+        }
+
+        public static uint FieldToUInt32(string str, string name, uint defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return uint.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 32-bit number.");
+            }
+        }
+
+        public static long FieldToInt64(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return long.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 64-bit number.");
+            }
+        }
+
+        public static long FieldToInt64(string str, string name, long defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return long.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a signed 64-bit number.");
+            }
+        }
+
+        public static ulong FieldToUInt64(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return ulong.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 64-bit number.");
+            }
+        }
+
+        public static ulong FieldToUInt64(string str, string name, ulong defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return ulong.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as an unsigned 64-bit number.");
+            }
+        }
+
+        public static bool FieldToBool(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            try
+            {
+                return bool.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a true or false boolean.");
+            }
+        }
+
+        public static bool FieldToBool(string str, string name, bool defaultValue)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return bool.Parse(str);
+            }
+            catch (FormatException)
+            {
+                throw new FriendlyException($"{name} could not be parsed as a true or false boolean.");
+            }
+        }
+
+        public static string FieldToString(string str, string name)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new FriendlyException($"{name} was missing or empty.");
+            }
+
+            return str;
         }
     }
 }
