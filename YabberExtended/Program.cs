@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using YabberExtended.Formats;
 
 namespace YabberExtended
 {
@@ -207,6 +206,40 @@ namespace YabberExtended
                     var bnd2 = BND2.Read(sourceFile);
                     bnd2.Unpack(filename, targetDir, progress);
                 }
+                else if (SoulsFormats.AC3SL.BND.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking AC3SL BND: {filename}...");
+                    var bnd = SoulsFormats.AC3SL.BND.Read(sourceFile);
+                    bnd.Unpack(filename, targetDir, progress);
+                }
+                else if (SoulsFormats.Kuon.DVDBND.Is(sourceFile))
+                {
+                    try
+                    {
+                        var dvdBndKuon = SoulsFormats.Kuon.DVDBND.Read(sourceFile);
+                        Console.WriteLine($"Unpacking Kuon DVDBND: {filename}...");
+                        dvdBndKuon.Unpack(filename, targetDir, progress);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            var bndKuon = SoulsFormats.Kuon.BND.Read(sourceFile);
+                            Console.WriteLine($"Unpacking Kuon BND: {filename}...");
+                            bndKuon.Unpack(filename, targetDir, progress);
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                var bndACE3 = SoulsFormats.ACE3.BND.Read(sourceFile);
+                                Console.WriteLine($"Unpacking ACE3 BND: {filename}...");
+                                bndACE3.Unpack(filename, targetDir, progress);
+                            }
+                            catch{}
+                        }
+                    }
+                }
                 else if (BXF3.IsBHD(sourceFile))
                 {
                     string bdtExtension = Path.GetExtension(filename).Replace("bhd", "bdt");
@@ -250,6 +283,30 @@ namespace YabberExtended
                     Console.WriteLine($"Unpacking FFX: {filename}...");
                     var ffx = FFXDLSE.Read(sourceFile);
                     ffx.Unpack(sourceFile);
+                }
+                else if (TPF.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking TPF: {filename}...");
+                    TPF tpf = TPF.Read(sourceFile);
+                    tpf.Unpack(filename, targetDir, progress);
+                }
+                else if (Zero3.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking 000: {filename}...");
+                    Zero3 z3 = Zero3.Read(sourceFile);
+                    z3.Unpack(targetDir);
+                }
+                else if (ANC.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking ANC: {filename}...");
+                    ANC anc = ANC.Read(sourceFile);
+                    anc.Unpack(filename, targetDir);
+                }
+                else if (MQB.Is(sourceFile))
+                {
+                    Console.WriteLine($"Converting MQB: {filename}...");
+                    MQB mqb = MQB.Read(sourceFile);
+                    mqb.Unpack(filename, sourceDir, progress);
                 }
                 else if (sourceFile.EndsWith(".ffx.xml") || sourceFile.EndsWith(".ffx.dcx.xml"))
                 {
@@ -301,17 +358,10 @@ namespace YabberExtended
                     Console.WriteLine($"Repacking LUAINFO: {filename}...");
                     YLUAINFO.Repack(sourceFile);
                 }
-                else if (TPF.Is(sourceFile))
+                else if (sourceFile.EndsWith(".mqb.xml"))
                 {
-                    Console.WriteLine($"Unpacking TPF: {filename}...");
-                    TPF tpf = TPF.Read(sourceFile);
-                    tpf.Unpack(filename, targetDir, progress);
-                }
-                else if (Zero3.Is(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking 000: {filename}...");
-                    Zero3 z3 = Zero3.Read(sourceFile);
-                    z3.Unpack(targetDir);
+                    Console.WriteLine($"Converting XML to MQB: {filename}...");
+                    YMQB.Repack(sourceFile);
                 }
                 else if (filename == "acparts.bin" || filename == "enemyparts.bin" || filename == "stabilizer.bin")
                 {
@@ -328,23 +378,6 @@ namespace YabberExtended
                     Console.WriteLine("Armored Core 5thgen AcParts is not supported.");
                     return true;
                 }
-                else if (ANC.Is(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking ANC: {filename}...");
-                    ANC anc = ANC.Read(sourceFile);
-                    anc.Unpack(filename, targetDir);
-                }
-                else if (MQB.Is(sourceFile))
-                {
-                    Console.WriteLine($"Converting MQB: {filename}...");
-                    MQB mqb = MQB.Read(sourceFile);
-                    mqb.Unpack(filename, sourceDir, progress);
-                }
-                else if (sourceFile.EndsWith(".mqb.xml"))
-                {
-                    Console.WriteLine($"Converting XML to MQB: {filename}...");
-                    YMQB.Repack(sourceFile);
-                }
                 else
                 {
                     Console.WriteLine($"File format not recognized: {filename}");
@@ -358,40 +391,55 @@ namespace YabberExtended
         {
             string sourceName = new DirectoryInfo(sourceDir).Name;
             string targetDir = new DirectoryInfo(sourceDir).Parent.FullName;
-            if (File.Exists($"{sourceDir}\\_yabber-bnd2.xml"))
+            if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd2.xml")))
             {
                 Console.WriteLine($"Repacking BND2: {sourceName}...");
                 YBND2.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-bnd3.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd3.xml")))
             {
                 Console.WriteLine($"Repacking BND3: {sourceName}...");
                 YBND3.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-bnd4.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd4.xml")))
             {
                 Console.WriteLine($"Repacking BND4: {sourceName}...");
                 YBND4.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-bxf3.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bxf3.xml")))
             {
                 Console.WriteLine($"Repacking BXF3: {sourceName}...");
                 YBXF3.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-bxf4.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bxf4.xml")))
             {
                 Console.WriteLine($"Repacking BXF4: {sourceName}...");
                 YBXF4.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-tpf.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-tpf.xml")))
             {
                 Console.WriteLine($"Repacking TPF: {sourceName}...");
                 YTPF.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\_yabber-anc.xml"))
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-anc.xml")))
             {
                 Console.WriteLine($"Repacking ANC: {sourceName}...");
                 YANC.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd_ac3sl.xml")))
+            {
+                Console.WriteLine($"Repacking AC3SL BND: {sourceName}...");
+                YBNDAC3SL.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd_kuon.xml")))
+            {
+                Console.WriteLine($"Repacking Kuon BND: {sourceName}...");
+                YBNDKUON.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-bnd_ace3.xml")))
+            {
+                Console.WriteLine($"Repacking ACE3 BND: {sourceName}...");
+                YBNDACE3.Repack(sourceDir, targetDir);
             }
             else
             {

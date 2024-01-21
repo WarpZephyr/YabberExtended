@@ -119,6 +119,8 @@ namespace YabberExtended
             return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         }
 
+        #region Field Conversions
+
         public static sbyte FieldToSByte(string str, string name)
         {
             if (string.IsNullOrEmpty(str))
@@ -434,5 +436,7 @@ namespace YabberExtended
 
             return str;
         }
+
+        #endregion
     }
 }

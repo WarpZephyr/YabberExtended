@@ -73,6 +73,9 @@
     <Compile Include="Formats\YBND2.cs" />
     <Compile Include="Formats\YANC.cs" />
     <Compile Include="Formats\YBinder.cs" />
+    <Compile Include="Formats\YBNDACE3.cs" />
+    <Compile Include="Formats\YBNDAC3SL.cs" />
+    <Compile Include="Formats\YBNDKUON.cs" />
     <Compile Include="Formats\YBXF3.cs" />
     <Compile Include="Formats\YBXF4.cs" />
     <Compile Include="Formats\YBND4.cs" />

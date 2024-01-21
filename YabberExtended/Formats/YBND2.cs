@@ -4,7 +4,7 @@ using System.Xml;
 using SoulsFormats;
 using static YabberExtended.YBUtil;
 
-namespace YabberExtended.Formats
+namespace YabberExtended
 {
     static class YBND2
     {
@@ -28,12 +28,19 @@ namespace YabberExtended.Formats
             {
                 xw.WriteStartElement("file");
                 var file = bnd.Files[i];
+                string strID = file.ID.ToString();
+
                 if (bnd.FilePathMode != BND2.FilePathModeEnum.Nameless)
                     xw.WriteElementString("name", file.Name);
-                xw.WriteElementString("id", file.ID.ToString());
+                xw.WriteElementString("id", strID);
                 xw.WriteEndElement();
 
-                string name = file.Name ?? file.ID.ToString();
+                string name = file.Name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = strID;
+                }
+
                 if (bnd.FilePathMode == BND2.FilePathModeEnum.NamesOffset)
                     name = Path.Combine(RemoveRootFromPath(bnd.BaseDirectory), RemoveLeadingSlashes(name));
 

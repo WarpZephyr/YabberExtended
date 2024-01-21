@@ -1,11 +1,9 @@
 ﻿using SoulsFormats;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
-namespace YabberExtended.Formats
+namespace YabberExtended
 {
     static class YANC
     {
