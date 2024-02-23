@@ -240,7 +240,7 @@ namespace YabberExtended
                         }
                     }
                 }
-                else if (BXF3.IsBHD(sourceFile))
+                else if (BXF3.IsHeader(sourceFile))
                 {
                     string bdtExtension = Path.GetExtension(filename).Replace("bhd", "bdt");
                     string bdtFilename = $"{Path.GetFileNameWithoutExtension(filename)}{bdtExtension}";
@@ -259,7 +259,7 @@ namespace YabberExtended
                         return true;
                     }
                 }
-                else if (BXF4.IsBHD(sourceFile))
+                else if (BXF4.IsHeader(sourceFile))
                 {
                     string bdtExtension = Path.GetExtension(filename).Replace("bhd", "bdt");
                     string bdtFilename = $"{Path.GetFileNameWithoutExtension(filename)}{bdtExtension}";

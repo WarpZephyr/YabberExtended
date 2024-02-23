@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.0
+--| YabberExtended 1.0.2
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -39,6 +39,10 @@ The other two programs are assumed to be in the same folder. If you move them, j
 
 
 --| Formats
+
+BND2
+Extensions: .bnd, .BND
+A generic file container used in many later FromSoftware games in the PS2 and PSP era.
 
 BND3
 Extension: .*bnd
@@ -91,3 +95,9 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.0.0
 	YabberExtended is released.
+
+1.0.1
+	Stopped BND3 writing FileHeadersEnd
+
+1.0.2
+	New changes adding many BND formats
