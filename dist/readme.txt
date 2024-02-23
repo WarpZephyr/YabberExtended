@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.2
+--| YabberExtended 1.0.3
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -101,3 +101,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.0.2
 	New changes adding many BND formats
+
+1.0.3
+	Improved FMG support
