@@ -18,6 +18,7 @@ namespace YabberExtended
             xw.WriteElementString("compression", fmg.Compression.ToString());
             xw.WriteElementString("version", fmg.Version.ToString());
             xw.WriteElementString("bigendian", fmg.BigEndian.ToString());
+            xw.WriteElementString("wide", fmg.Wide.ToString());
             xw.WriteStartElement("entries");
 
             // I think they're sorted already, but whatever
@@ -44,6 +45,18 @@ namespace YabberExtended
             fmg.Compression = compression;
             fmg.Version = (FMG.FMGVersion)Enum.Parse(typeof(FMG.FMGVersion), xml.SelectSingleNode("fmg/version").InnerText);
             fmg.BigEndian = bool.Parse(xml.SelectSingleNode("fmg/bigendian").InnerText);
+
+
+            string wideStr = xml.SelectSingleNode("fmg/wide").InnerText;
+            if (string.IsNullOrWhiteSpace(wideStr))
+            {
+                Console.WriteLine("WARNING: FMG \"wide\" field not found, setting false by default.");
+                fmg.Wide = false;
+            }
+            else
+            {
+                fmg.Wide = bool.Parse(wideStr);
+            }
 
             foreach (XmlNode textNode in xml.SelectNodes("fmg/entries/text"))
             {
