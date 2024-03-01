@@ -18,7 +18,7 @@ namespace YabberExtended
             xw.WriteElementString("compression", fmg.Compression.ToString());
             xw.WriteElementString("version", fmg.Version.ToString());
             xw.WriteElementString("bigendian", fmg.BigEndian.ToString());
-            xw.WriteElementString("wide", fmg.Wide.ToString());
+            xw.WriteElementString("unicode", fmg.Unicode.ToString());
             xw.WriteStartElement("entries");
 
             // I think they're sorted already, but whatever
@@ -46,16 +46,15 @@ namespace YabberExtended
             fmg.Version = (FMG.FMGVersion)Enum.Parse(typeof(FMG.FMGVersion), xml.SelectSingleNode("fmg/version").InnerText);
             fmg.BigEndian = bool.Parse(xml.SelectSingleNode("fmg/bigendian").InnerText);
 
-
-            string wideStr = xml.SelectSingleNode("fmg/wide").InnerText;
-            if (string.IsNullOrWhiteSpace(wideStr))
+            string unicodeStr = xml.SelectSingleNode("fmg/unicode")?.InnerText;
+            if (string.IsNullOrWhiteSpace(unicodeStr))
             {
-                Console.WriteLine("WARNING: FMG \"wide\" field not found, setting false by default.");
-                fmg.Wide = false;
+                Console.WriteLine("WARNING: FMG \"unicode\" field not found, setting true by default.");
+                fmg.Unicode = true;
             }
             else
             {
-                fmg.Wide = bool.Parse(wideStr);
+                fmg.Unicode = bool.Parse(unicodeStr);
             }
 
             foreach (XmlNode textNode in xml.SelectNodes("fmg/entries/text"))
