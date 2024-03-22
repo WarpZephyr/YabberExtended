@@ -379,6 +379,39 @@ namespace YabberExtended
                     Console.WriteLine($"Converting XML to MQB: {filename}...");
                     YMQB.Repack(sourceFile);
                 }
+                else if (filename.EndsWith("DATA.BIN", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    int entryCount;
+                    bool compressed;
+                    switch (filename)
+                    {
+                        case "ERDATA.BIN":
+                        case "AC2DATA.BIN":
+                            entryCount = 4096;
+                            compressed = false;
+                            break;
+                        case "AC25DATA.BIN":
+                        case "AC3DATA.BIN":
+                            entryCount = 8192;
+                            compressed = false;
+                            break;
+                        case "ac3data.bin":
+                            entryCount = 8192;
+                            compressed = true;
+                            break;
+                        default:
+                            entryCount = -1;
+                            compressed = false;
+                            break;
+                    }
+
+                    if (entryCount != -1)
+                    {
+                        Console.WriteLine($"Unpacking FSDATA: {filename}...");
+                        var data = FSDATA.Read(sourceFile, entryCount, compressed);
+                        data.Unpack(filename, targetDir, progress);
+                    }
+                }
                 else if (filename == "acparts.bin" || filename == "enemyparts.bin" || filename == "stabilizer.bin")
                 {
                     Console.WriteLine("Armored Core 4 AcParts is not supported.");
