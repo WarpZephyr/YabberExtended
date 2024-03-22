@@ -236,7 +236,7 @@ namespace YabberExtended
                                 Console.WriteLine($"Unpacking ACE3 BND: {filename}...");
                                 bndACE3.Unpack(filename, targetDir, progress);
                             }
-                            catch{}
+                            catch { }
                         }
                     }
                 }
@@ -244,7 +244,7 @@ namespace YabberExtended
                 {
                     string bdtExtension = Path.GetExtension(filename).Replace("bhd", "bdt");
                     string bdtFilename = $"{Path.GetFileNameWithoutExtension(filename)}{bdtExtension}";
-                    string bdtPath = $"{sourceDir}\\{bdtFilename}";
+                    string bdtPath = Path.Combine(sourceDir, bdtFilename);
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF3: {filename}...");
@@ -263,7 +263,7 @@ namespace YabberExtended
                 {
                     string bdtExtension = Path.GetExtension(filename).Replace("bhd", "bdt");
                     string bdtFilename = $"{Path.GetFileNameWithoutExtension(filename)}{bdtExtension}";
-                    string bdtPath = $"{sourceDir}\\{bdtFilename}";
+                    string bdtPath = Path.Combine(sourceDir, bdtFilename);
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF4: {filename}...");
@@ -275,6 +275,22 @@ namespace YabberExtended
                     else
                     {
                         Console.WriteLine($"BDT not found for BHD: {filename}");
+                        return true;
+                    }
+                }
+                else if (LDMU.Is(sourceFile))
+                {
+                    string bndFilename = $"{Path.GetFileNameWithoutExtension(filename)}.bnd";
+                    string bndPath = Path.Combine(sourceDir, bndFilename);
+                    if (File.Exists(bndPath))
+                    {
+                        Console.WriteLine($"Unpacking LDMU: {filename}...");
+                        var ldmu = LDMU.Read(sourceFile, bndPath);
+                        ldmu.Unpack(filename, bndFilename, targetDir, progress);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"BND not found for BHD: {filename}");
                         return true;
                     }
                 }
@@ -415,6 +431,11 @@ namespace YabberExtended
             {
                 Console.WriteLine($"Repacking BXF4: {sourceName}...");
                 YBXF4.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-ldmu.xml")))
+            {
+                Console.WriteLine($"Repacking LDMU: {sourceName}...");
+                YLDMU.Repack(sourceDir, targetDir);
             }
             else if (File.Exists(Path.Combine(sourceDir, "_yabber-tpf.xml")))
             {

@@ -128,14 +128,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return sbyte.Parse(str);
-            }
-            catch (FormatException)
+            if (!sbyte.TryParse(str, out sbyte result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 8-bit number.");
             }
+
+            return result;
         }
 
         public static sbyte FieldToSByte(string str, string name, sbyte defaultValue)
@@ -145,14 +143,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return sbyte.Parse(str);
-            }
-            catch (FormatException)
+            if (!sbyte.TryParse(str, out sbyte result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 8-bit number.");
             }
+
+            return result;
         }
 
         public static byte FieldToByte(string str, string name)
@@ -162,14 +158,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return byte.Parse(str);
-            }
-            catch (FormatException)
+            if (!byte.TryParse(str, out byte result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 8-bit number.");
             }
+
+            return result;
         }
 
         public static byte FieldToByte(string str, string name, byte defaultValue)
@@ -179,14 +173,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return byte.Parse(str);
-            }
-            catch (FormatException)
+            if (!byte.TryParse(str, out byte result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 8-bit number.");
             }
+
+            return result;
         }
 
         public static short FieldToInt16(string str, string name)
@@ -196,14 +188,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return short.Parse(str);
-            }
-            catch (FormatException)
+            if (!short.TryParse(str, out short result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 16-bit number.");
             }
+
+            return result;
         }
 
         public static short FieldToInt16(string str, string name, short defaultValue)
@@ -213,14 +203,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return short.Parse(str);
-            }
-            catch (FormatException)
+            if (!short.TryParse(str, out short result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 16-bit number.");
             }
+
+            return result;
         }
 
         public static ushort FieldToUInt16(string str, string name)
@@ -230,31 +218,27 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return ushort.Parse(str);
-            }
-            catch (FormatException)
+            if (!ushort.TryParse(str, out ushort result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 16-bit number.");
             }
+
+            return result;
         }
 
-        public static ushort FieldToInt16(string str, string name, ushort defaultValue)
+        public static ushort FieldToUInt16(string str, string name, ushort defaultValue)
         {
             if (string.IsNullOrEmpty(str))
             {
                 return defaultValue;
             }
 
-            try
-            {
-                return ushort.Parse(str);
-            }
-            catch (FormatException)
+            if (!ushort.TryParse(str, out ushort result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 16-bit number.");
             }
+
+            return result;
         }
 
         public static int FieldToInt32(string str, string name)
@@ -264,14 +248,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return int.Parse(str);
-            }
-            catch (FormatException)
+            if (!int.TryParse(str, out int result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 32-bit number.");
             }
+
+            return result;
         }
 
         public static int FieldToInt32(string str, string name, int defaultValue)
@@ -281,14 +263,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return int.Parse(str);
-            }
-            catch (FormatException)
+            if (!int.TryParse(str, out int result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 32-bit number.");
             }
+
+            return result;
         }
 
         public static uint FieldToUInt32(string str, string name)
@@ -298,14 +278,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return uint.Parse(str);
-            }
-            catch (FormatException)
+            if (!uint.TryParse(str, out uint result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 32-bit number.");
             }
+
+            return result;
         }
 
         public static uint FieldToUInt32(string str, string name, uint defaultValue)
@@ -315,14 +293,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return uint.Parse(str);
-            }
-            catch (FormatException)
+            if (!uint.TryParse(str, out uint result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 32-bit number.");
             }
+
+            return result;
         }
 
         public static long FieldToInt64(string str, string name)
@@ -332,14 +308,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return long.Parse(str);
-            }
-            catch (FormatException)
+            if (!long.TryParse(str, out long result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 64-bit number.");
             }
+
+            return result;
         }
 
         public static long FieldToInt64(string str, string name, long defaultValue)
@@ -349,14 +323,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return long.Parse(str);
-            }
-            catch (FormatException)
+            if (!long.TryParse(str, out long result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a signed 64-bit number.");
             }
+
+            return result;
         }
 
         public static ulong FieldToUInt64(string str, string name)
@@ -366,14 +338,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return ulong.Parse(str);
-            }
-            catch (FormatException)
+            if (!ulong.TryParse(str, out ulong result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 64-bit number.");
             }
+
+            return result;
         }
 
         public static ulong FieldToUInt64(string str, string name, ulong defaultValue)
@@ -383,14 +353,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return ulong.Parse(str);
-            }
-            catch (FormatException)
+            if (!ulong.TryParse(str, out ulong result))
             {
                 throw new FriendlyException($"{name} could not be parsed as an unsigned 64-bit number.");
             }
+
+            return result;
         }
 
         public static bool FieldToBool(string str, string name)
@@ -400,14 +368,12 @@ namespace YabberExtended
                 throw new FriendlyException($"{name} was missing or empty.");
             }
 
-            try
-            {
-                return bool.Parse(str);
-            }
-            catch (FormatException)
+            if (!bool.TryParse(str, out bool result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a true or false boolean.");
             }
+
+            return result;
         }
 
         public static bool FieldToBool(string str, string name, bool defaultValue)
@@ -417,14 +383,12 @@ namespace YabberExtended
                 return defaultValue;
             }
 
-            try
-            {
-                return bool.Parse(str);
-            }
-            catch (FormatException)
+            if (!bool.TryParse(str, out bool result))
             {
                 throw new FriendlyException($"{name} could not be parsed as a true or false boolean.");
             }
+
+            return result;
         }
 
         public static string FieldToString(string str, string name)

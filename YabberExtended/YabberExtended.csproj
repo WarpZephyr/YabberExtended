@@ -83,11 +83,13 @@
     <Compile Include="Formats\YFFX.cs" />
     <Compile Include="Formats\YGPARAM.cs" />
     <Compile Include="Formats\YFMG.cs" />
+    <Compile Include="Formats\YLDMU.cs" />
     <Compile Include="Formats\YLUAGNL.cs" />
     <Compile Include="Formats\YLUAINFO.cs" />
     <Compile Include="Formats\YMQB.cs" />
     <Compile Include="Formats\YZero3.cs" />
     <Compile Include="FriendlyException.cs" />
+    <Compile Include="HexHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Formats\YTPF.cs" />

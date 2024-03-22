@@ -20,7 +20,7 @@ namespace YabberExtended
             xw.WriteElementString("alignment_size", bnd.AlignmentSize.ToString());
             xw.WriteElementString("file_path_mode", bnd.FilePathMode.ToString());
             xw.WriteElementString("unk1B", bnd.Unk1B.ToString());
-            if (bnd.FilePathMode == BND2.FilePathModeEnum.NamesOffset)
+            if (bnd.FilePathMode == BND2.FilePathModeEnum.BaseDirectory)
                 xw.WriteElementString("base_directory", bnd.BaseDirectory);
 
             xw.WriteStartElement("files");
@@ -41,7 +41,7 @@ namespace YabberExtended
                     name = strID;
                 }
 
-                if (bnd.FilePathMode == BND2.FilePathModeEnum.NamesOffset)
+                if (bnd.FilePathMode == BND2.FilePathModeEnum.BaseDirectory)
                     name = Path.Combine(RemoveRootFromPath(bnd.BaseDirectory), RemoveLeadingSlashes(name));
 
                 string outPath = Path.Combine(targetDir, RemoveRootFromPath(name));
@@ -76,22 +76,22 @@ namespace YabberExtended
                     break;
                 case "1":
                 case "NamesNoOffset":
-                    filePathMode = BND2.FilePathModeEnum.NamesNoOffset;
+                    filePathMode = BND2.FilePathModeEnum.FileName;
                     break;
                 case "2":
                 case "Paths":
-                    filePathMode = BND2.FilePathModeEnum.Paths;
+                    filePathMode = BND2.FilePathModeEnum.FullPath;
                     break;
                 case "3":
                 case "NamesOffset":
-                    filePathMode = BND2.FilePathModeEnum.NamesOffset;
+                    filePathMode = BND2.FilePathModeEnum.BaseDirectory;
                     break;
                 default:
                     throw new FriendlyException($"{strFilePathMode} is not a valid file path mode.");
             }
             bnd.FilePathMode = filePathMode;
 
-            if (bnd.FilePathMode == BND2.FilePathModeEnum.NamesOffset)
+            if (bnd.FilePathMode == BND2.FilePathModeEnum.BaseDirectory)
             {
                 bnd.BaseDirectory = xml.SelectSingleNode("bnd2/base_directory")?.InnerText ?? string.Empty;
             }
@@ -110,13 +110,13 @@ namespace YabberExtended
                         case BND2.FilePathModeEnum.Nameless:
                             inPath = Path.Combine(sourceDir, id.ToString());
                             break;
-                        case BND2.FilePathModeEnum.NamesNoOffset:
+                        case BND2.FilePathModeEnum.FileName:
                             inPath = Path.Combine(sourceDir, Path.GetDirectoryName(name), $"{Path.GetFileNameWithoutExtension(name)}{Path.GetExtension(name)}");
                             break;
-                        case BND2.FilePathModeEnum.Paths:
+                        case BND2.FilePathModeEnum.FullPath:
                             inPath = Path.Combine(sourceDir, RemoveRootFromPath(name));
                             break;
-                        case BND2.FilePathModeEnum.NamesOffset:
+                        case BND2.FilePathModeEnum.BaseDirectory:
                             inPath = Path.Combine(sourceDir, RemoveRootFromPath(bnd.BaseDirectory), RemoveLeadingSlashes(name));
                             break;
                         default:

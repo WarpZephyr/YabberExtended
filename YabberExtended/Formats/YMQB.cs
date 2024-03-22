@@ -63,8 +63,21 @@ namespace YabberExtended
 
             switch (customdata.Type)
             {
-                case MQB.CustomData.DataType.Vector3:
-                    xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString());
+                case MQB.CustomData.DataType.Vector:
+                    switch (customdata.MemberCount)
+                    {
+                        case 2:
+                            xw.WriteElementString("Value", ((Vector2)customdata.Value).Vector2ToString());
+                            break;
+                        case 3:
+                            xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString());
+                            break;
+                        case 4:
+                            xw.WriteElementString("Value", ((Vector4)customdata.Value).Vector4ToString());
+                            break;
+                        default:
+                            throw new NotImplementedException($"{nameof(MQB.CustomData.MemberCount)} {customdata.MemberCount} not implemented for: {nameof(MQB.CustomData.DataType.Vector)}");
+                    }
                     break;
                 case MQB.CustomData.DataType.Custom:
                     xw.WriteElementString("Value", ((byte[])customdata.Value).ToHexString());
@@ -74,7 +87,7 @@ namespace YabberExtended
                     break;
             }
 
-            xw.WriteElementString("Unk44", $"{customdata.Unk44}");
+            xw.WriteElementString("MemberCount", $"{customdata.MemberCount}");
             xw.WriteStartElement("Sequences");
             foreach (var sequence in customdata.Sequences)
                 UnpackSequence(xw, sequence);
@@ -244,8 +257,9 @@ namespace YabberExtended
 
             string name = customdataNode.SelectSingleNode("Name").InnerText;
             var type = FriendlyParseEnum<MQB.CustomData.DataType>(nameof(MQB.CustomData), nameof(MQB.CustomData.Type), customdataNode.SelectSingleNode("Type").InnerText);
-            object value = ConvertValueToDataType(customdataNode.SelectSingleNode("Value").InnerText, type);
-            int unk44 = FriendlyParseInt32(nameof(MQB.CustomData), nameof(MQB.CustomData.Unk44), customdataNode.SelectSingleNode("Unk44").InnerText);
+
+            int memberCount = FriendlyParseInt32(nameof(MQB.CustomData), nameof(MQB.CustomData.MemberCount), customdataNode.SelectSingleNode("MemberCount").InnerText);
+            object value = ConvertValueToDataType(customdataNode.SelectSingleNode("Value").InnerText, type, memberCount);
             List<MQB.CustomData.Sequence> sequences = new List<MQB.CustomData.Sequence>();
 
             var seqsNode = customdataNode.SelectSingleNode("Sequences");
@@ -255,7 +269,7 @@ namespace YabberExtended
             customdata.Name = name;
             customdata.Type = type;
             customdata.Value = value;
-            customdata.Unk44 = unk44;
+            customdata.MemberCount = memberCount;
             customdata.Sequences = sequences;
             return customdata;
         }
@@ -415,9 +429,33 @@ namespace YabberExtended
             return transform;
         }
 
+        public static string Vector2ToString(this Vector2 vector)
+        {
+            return $"X:{vector.X} Y:{vector.Y}";
+        }
+
         public static string Vector3ToString(this Vector3 vector)
         {
             return $"X:{vector.X} Y:{vector.Y} Z:{vector.Z}";
+        }
+
+        public static string Vector4ToString(this Vector4 vector)
+        {
+            return $"X:{vector.X} Y:{vector.Y} Z:{vector.Z} W:{vector.W}";
+        }
+
+        public static Vector2 ToVector2(this string str)
+        {
+            int xStartIndex = str.IndexOf("X:") + 2;
+            int yStartIndex = str.IndexOf("Y:") + 2;
+
+            string xStr = str.Substring(xStartIndex, yStartIndex - xStartIndex - 3);
+            string yStr = str.Substring(yStartIndex, str.Length - yStartIndex);
+
+            float x = float.Parse(xStr);
+            float y = float.Parse(yStr);
+
+            return new Vector2(x, y);
         }
 
         public static Vector3 ToVector3(this string str)
@@ -437,7 +475,27 @@ namespace YabberExtended
             return new Vector3(x, y, z);
         }
 
-        public static object ConvertValueToDataType(string str, MQB.CustomData.DataType type)
+        public static Vector4 ToVector4(this string str)
+        {
+            int xStartIndex = str.IndexOf("X:") + 2;
+            int yStartIndex = str.IndexOf("Y:") + 2;
+            int zStartIndex = str.IndexOf("Z:") + 2;
+            int wStartIndex = str.IndexOf("W:") + 2;
+
+            string xStr = str.Substring(xStartIndex, yStartIndex - xStartIndex - 3);
+            string yStr = str.Substring(yStartIndex, zStartIndex - yStartIndex - 3);
+            string zStr = str.Substring(zStartIndex, wStartIndex - zStartIndex - 3);
+            string wStr = str.Substring(wStartIndex, str.Length - wStartIndex);
+
+            float x = float.Parse(xStr);
+            float y = float.Parse(yStr);
+            float z = float.Parse(zStr);
+            float w = float.Parse(wStr);
+
+            return new Vector4(x, y, z, w);
+        }
+
+        public static object ConvertValueToDataType(string str, MQB.CustomData.DataType type, int memberCount)
         {
             try
             {
@@ -454,7 +512,15 @@ namespace YabberExtended
                     case MQB.CustomData.DataType.String: return str;
                     case MQB.CustomData.DataType.Custom: return str.FriendlyHexToByteArray();
                     case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
-                    case MQB.CustomData.DataType.Vector3: return str.ToVector3();
+                    case MQB.CustomData.DataType.IntColor: return ConvertValueToColor(value);
+                    case MQB.CustomData.DataType.Vector:
+                        switch (memberCount)
+                        {
+                            case 2: return str.ToVector2();
+                            case 3: return str.ToVector3();
+                            case 4: return str.ToVector4();
+                            default: throw new NotSupportedException($"{nameof(MQB.CustomData.MemberCount)} {memberCount} not supported for: {nameof(MQB.CustomData.DataType.Vector)}");
+                        }
                     default: throw new NotImplementedException($"Unimplemented custom data type: {type}");
                 }
             }
