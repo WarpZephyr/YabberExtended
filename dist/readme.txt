@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.3
+--| YabberExtended 1.0.5
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -104,3 +104,11 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.0.3
 	Improved FMG support
+
+1.0.4
+	Fixed BND3 writing extra field by mistake in SoulsFormatsExtended
+	Fixed BND3 using BigEndian and not BitBigEndian field for flags when writing format
+	
+1.0.5
+	Added LDMU support
+	Added basic FSDATA support
