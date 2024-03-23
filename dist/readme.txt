@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.5
+--| YabberExtended 1.0.6
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -84,6 +84,14 @@ MQB
 A cutscene format which name stands for "MenuSeQuencerBinary".
 MQB dates back to at least Armored Core V, however Armored Core V and Armored Core Verdict Day MQB are not yet supported.
 
+LDMU
+Extensions: .bhd, .bnd
+A generic file container split into a header and data file, seen used in ACE PSP. Only drag-and-drop the .bhd to unpack it; the .bnd is assumed to be in the same directory.
+
+FSDATA
+Extension: .BIN, .bin
+A simpilistic archive format with a fixed number of entries, seen in many older FromSoftware games. The settings that were used to write the archive is currently determined by it's file name when reading it.
+
 --| Contributors
 
 katalash - GPARAM support on Yabber
@@ -112,3 +120,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 1.0.5
 	Added LDMU support
 	Added basic FSDATA support
+
+1.0.6
+	Added FSDATA repack support

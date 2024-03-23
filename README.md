@@ -18,3 +18,23 @@ https://github.com/JKAnderson/Yabber
 # Changelog
 ### 1.0.0
 * YabberExtended is released.
+
+### 1.0.1
+* Stopped BND3 writing FileHeadersEnd
+
+### 1.0.2
+* New changes adding many BND formats
+
+### 1.0.3
+* Improved FMG support
+
+### 1.0.4
+* Fixed BND3 writing extra field by mistake in SoulsFormatsExtended
+* Fixed BND3 using BigEndian and not BitBigEndian field for flags when writing format
+	
+### 1.0.5
+* Added LDMU support
+* Added basic FSDATA support
+
+### 1.0.6
+* Added FSDATA repack support
