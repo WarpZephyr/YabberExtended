@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using static YabberExtended.YBUtil;
 
 namespace YabberExtended
 {
@@ -36,6 +37,41 @@ namespace YabberExtended
 
             xw.WriteEndElement();
             xw.Close();
+        }
+
+        public static void Repack(string sourceDir, string targetDir)
+        {
+            var xml = new XmlDocument();
+            xml.Load(Path.Combine(sourceDir, "_yabber-fsdata.xml"));
+            string fsdataName = FieldToString(xml.SelectSingleNode("fsdata/fsdata_name")?.InnerText, "fsdata_name");
+            int entryCount = FieldToInt32(xml.SelectSingleNode("fsdata/entry_count")?.InnerText, "entry_count");
+            bool compressed = FieldToBool(xml.SelectSingleNode("fsdata/compressed")?.InnerText, "compressed");
+            var data = new FSDATA(entryCount, compressed);
+
+            var filesNode = xml.SelectSingleNode("fsdata/files");
+            if (filesNode != null)
+            {
+                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                {
+                    var file = new FSDATA.File();
+                    string strID = fileNode.SelectSingleNode("id")?.InnerText;
+                    int id = FieldToInt32(strID, "id");
+                    
+                    string inPath = Path.Combine(sourceDir, strID);
+                    if (!File.Exists(inPath))
+                    {
+                        throw new FriendlyException($"File not found: {inPath}");
+                    }
+
+                    file.ID = id;
+                    file.Bytes = File.ReadAllBytes(inPath);
+                    data.Files.Add(file);
+                }
+            }
+
+            string outPath = Path.Combine(targetDir, fsdataName);
+            Backup(outPath);
+            data.Write(outPath);
         }
     }
 }

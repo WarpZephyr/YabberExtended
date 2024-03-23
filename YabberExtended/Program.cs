@@ -470,6 +470,11 @@ namespace YabberExtended
                 Console.WriteLine($"Repacking LDMU: {sourceName}...");
                 YLDMU.Repack(sourceDir, targetDir);
             }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-fsdata.xml")))
+            {
+                Console.WriteLine($"Repacking FSDATA: {sourceName}...");
+                YFSDATA.Repack(sourceDir, targetDir);
+            }
             else if (File.Exists(Path.Combine(sourceDir, "_yabber-tpf.xml")))
             {
                 Console.WriteLine($"Repacking TPF: {sourceName}...");
