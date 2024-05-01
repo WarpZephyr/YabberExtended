@@ -15,7 +15,6 @@ namespace YabberExtended
         public static void Unpack(this AcParts4 acparts, string sourceName, string targetDir)
         {
             Directory.CreateDirectory(targetDir);
-            Encoding shiftJIS = Encoding.GetEncoding("shift-jis");
             string[] names = new string[]
             {
                 "head.txt",
@@ -100,6 +99,7 @@ namespace YabberExtended
                         sw.WriteLine($"[{i}]");
                         unpackPart(sw, part, version);
                     }
+                    sw.WriteLine(); // I don't know why either
                 }
 
                 return true;
