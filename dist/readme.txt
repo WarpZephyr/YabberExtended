@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.7
+--| YabberExtended 1.0.8
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -92,6 +92,12 @@ FSDATA
 Extension: .BIN, .bin
 A simpilistic archive format with a fixed number of entries, seen in many older FromSoftware games. The settings that were used to write the archive is currently determined by it's file name when reading it.
 
+AcParts4
+File Names: AcParts.bin, Stabilizer.bin, EnemyParts.bin
+A format that holds part stats in Armored Core 4 and Armored Core For Answer, this support is for those two games.
+AcParts.bin has all parts for playable ACs except for stabilizers which are moved to Stabilizer.bin.
+EnemyParts.bin has FCS and Arm Unit (Weapon) parts for enemies that use non-playable things.
+
 --| Contributors
 
 katalash - GPARAM support on Yabber
@@ -126,3 +132,7 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.0.7
 	Fixed TPF padding issues, mainly aimed at Armored Core Verdict Day for now.
+	
+1.0.8
+	Improved BND2 support
+	Added AC4 and ACFA AcParts unpacking support

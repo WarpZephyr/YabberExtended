@@ -530,7 +530,8 @@ namespace YabberExtended
                 int num = i + 1;
                 Console.WriteLine($"{num}: {options[i]}");
             }
-            string version = Console.ReadLine();
+
+            string version = Console.ReadLine().Trim();
             if (Array.IndexOf(options, version) == -1)
             {
                 if (!int.TryParse(version, out int chosenNum))

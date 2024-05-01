@@ -38,3 +38,10 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.0.6
 * Added FSDATA repack support
+
+### 1.0.7
+* Fixed TPF padding issues, mainly aimed at Armored Core Verdict Day for now.
+
+### 1.0.8
+* Improved BND2 support
+* Added AC4 and ACFA AcParts unpacking support
