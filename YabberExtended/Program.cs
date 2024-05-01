@@ -1,6 +1,7 @@
 ﻿using SoulsFormats;
 using SoulsFormats.AC4;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -121,6 +122,7 @@ namespace YabberExtended
         {
             string sourceDir = Path.GetDirectoryName(sourceFile);
             string filename = Path.GetFileName(sourceFile);
+            string filenameLower = filename.ToLowerInvariant();
             string targetDir = Path.Combine(sourceDir, filename.Replace('.', '-'));
 
             if (File.Exists(targetDir))
@@ -203,8 +205,10 @@ namespace YabberExtended
                 else if (BND2.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND2: {filename}...");
-                    var bnd2 = BND2.Read(sourceFile);
-                    bnd2.Unpack(filename, targetDir, progress);
+                    using (var bnd = new BND2Reader(sourceFile))
+                    {
+                        bnd.Unpack(filename, targetDir, progress);
+                    }
                 }
                 else if (SoulsFormats.AC3SL.BND.Is(sourceFile))
                 {
@@ -412,15 +416,12 @@ namespace YabberExtended
                         data.Unpack(filename, targetDir, progress);
                     }
                 }
-                else if (filename == "acparts.bin" || filename == "enemyparts.bin" || filename == "stabilizer.bin")
+                else if (filenameLower == "acparts.bin" || filenameLower == "enemyparts.bin" || filenameLower == "stabilizer.bin")
                 {
-                    Console.WriteLine("Armored Core 4 AcParts is not supported.");
-                    return true;
-                }
-                else if (filename == "AcParts.bin" || filename == "EnemyParts.bin" || filename == "Stabilizer.bin")
-                {
-                    Console.WriteLine("AcParts support for Armored Core For Answer is not supported.");
-                    return true;
+                    AcParts4.AcParts4Version version = PromptVersion<AcParts4.AcParts4Version>("AcParts4");
+                    Console.WriteLine("Unpacking AcParts4...");
+                    var acparts = AcParts4.Read(sourceFile, version);
+                    acparts.Unpack(filename, targetDir);
                 }
                 else if (filename == "acvparts.bin")
                 {
@@ -506,6 +507,47 @@ namespace YabberExtended
                 return true;
             }
             return false;
+        }
+
+        private static TEnum PromptVersion<TEnum>(string format) where TEnum : struct
+        {
+            var names = Enum.GetNames(typeof(TEnum));
+            string strVersion = PromptVersion(format, names);
+            if (!Enum.TryParse(strVersion, out TEnum version))
+            {
+                throw new InvalidDataException($"Selected version not present in enum: {version}");
+            }
+
+            return version;
+        }
+
+        private static string PromptVersion(string format, params string[] options)
+        {
+            Console.WriteLine($"Please choose a version for {format}:");
+            Console.WriteLine($"Options:");
+            for (int i = 0; i < options.Length; i++)
+            {
+                int num = i + 1;
+                Console.WriteLine($"{num}: {options[i]}");
+            }
+            string version = Console.ReadLine();
+            if (Array.IndexOf(options, version) == -1)
+            {
+                if (!int.TryParse(version, out int chosenNum))
+                {
+                    throw new FriendlyException("That option is not supported.");
+                }
+
+                int index = chosenNum - 1;
+                if (index >= options.Length)
+                {
+                    throw new FriendlyException("That option is not supported.");
+                }
+
+                version = options[index];
+            }
+
+            return version;
         }
     }
 }

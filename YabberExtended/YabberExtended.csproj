@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formats\YAcParts4.cs" />
     <Compile Include="Formats\YBND2.cs" />
     <Compile Include="Formats\YANC.cs" />
     <Compile Include="Formats\YBinder.cs" />
