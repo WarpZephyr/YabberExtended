@@ -2,7 +2,8 @@
 using System.IO;
 using System.Xml;
 using SoulsFormats.Kuon;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -85,19 +86,18 @@ namespace YabberExtended
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-bnd_kuon.xml"));
 
-            string binderName = FieldToString(xml.SelectSingleNode("bnd_kuon/binder_name")?.InnerText, "binder_name");
-            bnd.FileVersion = FieldToInt32(xml.SelectSingleNode("bnd_kuon/file_version")?.InnerText, "file_version");
-            bool hasEntrySizeField = FieldToBool(xml.SelectSingleNode("bnd_kuon/has_entry_size_field")?.InnerText, "has_entry_size_field");
+            string binderName = xml.ReadStringOrThrowIfWhiteSpace("bnd_kuon/binder_name");
+            bnd.FileVersion = xml.ReadInt32("bnd_kuon/file_version");
+            bool hasEntrySizeField = xml.ReadBooleanOrDefault("bnd_kuon/has_entry_size_field");
 
-            var filesNode = xml.SelectSingleNode("bnd_kuon/files");
-            if (filesNode != null)
+            var fileNodes = xml.SelectNodes("bnd_kuon/files/file");
+            if (fileNodes != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                foreach (XmlNode fileNode in fileNodes)
                 {
-                    int id = FieldToInt32(fileNode.SelectSingleNode("id")?.InnerText, "id");
-                    string name = fileNode.SelectSingleNode("name")?.InnerText ?? id.ToString();
-
-                    string inPath = Path.Combine(sourceDir, RemoveRootFromPath(name));
+                    int id = xml.ReadInt32("id");
+                    string name = fileNode.ReadStringOrDefault("name", id.ToString());
+                    string inPath = Path.Combine(sourceDir, name);
 
                     if (!File.Exists(inPath))
                         throw new FriendlyException($"File not found: {inPath}");
@@ -108,7 +108,7 @@ namespace YabberExtended
             }
 
             string outPath = Path.Combine(targetDir, binderName);
-            Backup(outPath);
+            BackupFile(outPath);
 
             if (hasEntrySizeField)
             {

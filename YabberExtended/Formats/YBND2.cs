@@ -2,7 +2,8 @@
 using System.IO;
 using System.Xml;
 using SoulsFormats;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -65,51 +66,33 @@ namespace YabberExtended
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-bnd2.xml"));
 
-            string binderName = FieldToString(xml.SelectSingleNode("bnd2/binder_name")?.InnerText, "binder_name");
-            bnd.HeaderInfoFlags = (BND2.HeaderInfoFlagsEnum)FieldToByte(xml.SelectSingleNode("bnd2/header_info_flags")?.InnerText, "header_info_flags");
-            bnd.FileInfoFlags = (BND2.FileInfoFlagsEnum)FieldToByte(xml.SelectSingleNode("bnd2/file_info_flags")?.InnerText, "file_info_flags");
-            bnd.Unk06 = FieldToByte(xml.SelectSingleNode("bnd2/unk06")?.InnerText, "unk06");
-            bnd.Unk07 = FieldToByte(xml.SelectSingleNode("bnd2/unk07")?.InnerText, "unk07");
-            bnd.FileVersion = FieldToInt32(xml.SelectSingleNode("bnd2/file_version")?.InnerText, "file_version");
-            bnd.AlignmentSize = FieldToUInt16(xml.SelectSingleNode("bnd2/alignment_size")?.InnerText, "alignment_size");
-            bnd.Unk1B = FieldToByte(xml.SelectSingleNode("bnd2/unk1B")?.InnerText, "unk1B", 0);
+            string binderName = xml.ReadStringOrThrowIfWhiteSpace("bnd2/binder_name");
+            bnd.HeaderInfoFlags = (BND2.HeaderInfoFlagsEnum)xml.ReadByte("bnd2/header_info_flags");
+            bnd.FileInfoFlags = (BND2.FileInfoFlagsEnum)xml.ReadByte("bnd2/file_info_flags");
+            bnd.Unk06 = xml.ReadByteOrDefault("bnd2/unk06");
+            bnd.Unk07 = xml.ReadByteOrDefault("bnd2/unk07");
+            bnd.FileVersion = xml.ReadInt32("bnd2/file_version");
+            bnd.AlignmentSize = xml.ReadUInt16("bnd2/alignment_size");
+            bnd.Unk1B = xml.ReadByteOrDefault("bnd2/unk1B");
 
-            string strFilePathMode = xml.SelectSingleNode("bnd2/file_path_mode")?.InnerText;
-            BND2.FilePathModeEnum filePathMode;
-            switch (strFilePathMode)
-            {
-                case "0":
-                case "Nameless":
-                    filePathMode = BND2.FilePathModeEnum.Nameless;
-                    break;
-                case "1":
-                case "FileName":
-                    filePathMode = BND2.FilePathModeEnum.FileName;
-                    break;
-                case "2":
-                case "FullPath":
-                    filePathMode = BND2.FilePathModeEnum.FullPath;
-                    break;
-                case "3":
-                case "BaseDirectory":
-                    filePathMode = BND2.FilePathModeEnum.BaseDirectory;
-                    break;
-                default:
-                    throw new FriendlyException($"{strFilePathMode} is not a valid file path mode.");
-            }
+            var filePathMode = xml.ReadEnum<BND2.FilePathModeEnum>("bnd2/file_path_mode");
             bnd.FilePathMode = filePathMode;
-
             if (bnd.FilePathMode == BND2.FilePathModeEnum.BaseDirectory)
             {
-                bnd.BaseDirectory = xml.SelectSingleNode("bnd2/base_directory")?.InnerText ?? string.Empty;
+                bnd.BaseDirectory = xml.ReadStringOrDefault("bnd2/base_directory", string.Empty);
+            }
+            else
+            {
+                bnd.BaseDirectory = string.Empty;
             }
 
-            var filesNode = xml.SelectSingleNode("bnd2/files");
+            var filesNode = xml.SelectNodes("bnd2/files/file");
             if (filesNode != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                foreach (XmlNode fileNode in filesNode)
                 {
-                    int id = FieldToInt32(fileNode.Attributes["id"]?.InnerText, "id");
+                    var attributes = fileNode.GetAttributesOrThrow();
+                    int id = attributes.ReadInt32("id");
                     string name = fileNode?.InnerText ?? string.Empty;
 
                     string inPath = string.Empty;
@@ -147,7 +130,7 @@ namespace YabberExtended
             }
 
             string outPath = Path.Combine(targetDir, binderName);
-            Backup(outPath);
+            BackupFile(outPath);
             bnd.Write(outPath);
         }
     }

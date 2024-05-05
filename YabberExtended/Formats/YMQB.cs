@@ -39,7 +39,7 @@ namespace YabberExtended
             xw.Close();
         }
 
-        #region UnpackHelpers
+        #region Unpack Helpers
 
         public static void UnpackResource(XmlWriter xw, MQB.Resource resource)
         {
@@ -190,7 +190,7 @@ namespace YabberExtended
 
         public static void Repack(string sourceFile)
         {
-            MQB mqb = new MQB();
+            var mqb = new MQB();
             XmlDocument xml = new XmlDocument();
             xml.Load(sourceFile);
 
@@ -223,11 +223,11 @@ namespace YabberExtended
             mqb.Cuts = cuts;
 
             string outPath = sourceFile.Replace(".mqb.xml", ".mqb");
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             mqb.Write(outPath);
         }
 
-        #region RepackHelpers
+        #region Repack Helpers
 
         public static MQB.Resource RepackResource(XmlNode resNode)
         {

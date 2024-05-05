@@ -39,7 +39,7 @@ namespace YabberExtended
             }
 
             string outPath = sourceFile.Replace(".luagnl.xml", ".luagnl");
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             gnl.Write(outPath);
         }
     }

@@ -2,7 +2,10 @@
 using System;
 using System.IO;
 using System.Xml;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions;
+using YabberExtended.Extensions.Value;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -43,25 +46,22 @@ namespace YabberExtended
         {
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-fsdata.xml"));
-            string fsdataName = FieldToString(xml.SelectSingleNode("fsdata/fsdata_name")?.InnerText, "fsdata_name");
-            int entryCount = FieldToInt32(xml.SelectSingleNode("fsdata/entry_count")?.InnerText, "entry_count");
-            bool compressed = FieldToBool(xml.SelectSingleNode("fsdata/compressed")?.InnerText, "compressed");
+            string fsdataName = xml.ReadStringOrThrowIfWhiteSpace("fsdata/fsdata_name");
+            int entryCount = xml.ReadInt32("fsdata/entry_count");
+            bool compressed = xml.ReadBoolean("fsdata/compressed");
             var data = new FSDATA(entryCount, compressed);
 
-            var filesNode = xml.SelectSingleNode("fsdata/files");
-            if (filesNode != null)
+            var fileNodes = xml.SelectNodes("fsdata/files/file");
+            if (fileNodes != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                foreach (XmlNode fileNode in fileNodes)
                 {
                     var file = new FSDATA.File();
-                    string strID = fileNode.SelectSingleNode("id")?.InnerText;
-                    int id = FieldToInt32(strID, "id");
+                    string strID = fileNode.GetNodeOrThrow("id").InnerText;
+                    int id = strID.ToInt32("id");
                     
-                    string inPath = Path.Combine(sourceDir, strID);
-                    if (!File.Exists(inPath))
-                    {
-                        throw new FriendlyException($"File not found: {inPath}");
-                    }
+                    string inPath = fileNode.GetFilePathNameOrUseID(sourceDir, strID);
+                    FriendlyException.ThrowIfNotFile(inPath);
 
                     file.ID = id;
                     file.Bytes = File.ReadAllBytes(inPath);
@@ -70,7 +70,7 @@ namespace YabberExtended
             }
 
             string outPath = Path.Combine(targetDir, fsdataName);
-            Backup(outPath);
+            BackupFile(outPath);
             data.Write(outPath);
         }
     }

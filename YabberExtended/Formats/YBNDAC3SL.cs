@@ -2,7 +2,10 @@
 using System.IO;
 using System.Xml;
 using SoulsFormats.AC3SL;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions;
+using YabberExtended.Extensions.Value;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -26,7 +29,7 @@ namespace YabberExtended
                 var file = bnd.Files[i];
                 string strID = file.ID.ToString();
 
-                xw.WriteElementString("id", strID);
+                xw.WriteElementString("file", strID);
 
                 string outPath = Path.Combine(targetDir, strID);
                 Directory.CreateDirectory(Path.GetDirectoryName(outPath));
@@ -45,31 +48,25 @@ namespace YabberExtended
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-bnd_ac3sl.xml"));
 
-            string binderName = FieldToString(xml.SelectSingleNode("bnd_ac3sl/binder_name")?.InnerText, "binder_name");
-            bnd.FileVersion = FieldToString(xml.SelectSingleNode("bnd_ac3sl/file_version")?.InnerText, "file_version");
-            bnd.AlignmentSize = FieldToInt16(xml.SelectSingleNode("bnd_ac3sl/alignment_size")?.InnerText, "alignment_size");
-            bnd.Unk1E = FieldToInt16(xml.SelectSingleNode("bnd_ac3sl/unk1E")?.InnerText, "unk1E");
+            string binderName = xml.ReadStringOrThrowIfWhiteSpace("bnd_ac3sl/binder_name");
+            bnd.FileVersion = xml.ReadStringOrDefault("bnd_ac3sl/file_version", "LTL");
+            bnd.AlignmentSize = xml.ReadInt16("bnd_ac3sl/alignment_size");
+            bnd.Unk1E = xml.ReadInt16("bnd_ac3sl/unk1E");
 
-            var filesNode = xml.SelectSingleNode("bnd_ac3sl/files");
-            if (filesNode != null)
+            var fileNodes = xml.SelectNodes("bnd_ac3sl/files/file");
+            if (fileNodes != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("id"))
+                foreach (XmlNode fileNode in fileNodes)
                 {
-                    int id = FieldToInt32(fileNode?.InnerText, "id");
-
-                    string inPath = Path.Combine(sourceDir, id.ToString());
-
-                    if (!File.Exists(inPath))
-                        throw new FriendlyException($"File not found: {inPath}");
-
-                    inPath = CorrectDirectorySeparator(inPath);
-                    bnd.Files.Add(new BND.File(id, File.ReadAllBytes(inPath)));
+                    string id = fileNode.GetXmlValueOrContents("id");
+                    string inPath = fileNode.GetFilePathNameOrUseID(sourceDir, id);
+                    FriendlyException.ThrowIfNotFile(inPath);
+                    bnd.Files.Add(new BND.File(id.ToInt32(), File.ReadAllBytes(inPath)));
                 }
             }
 
             string outPath = Path.Combine(targetDir, binderName);
-            Backup(outPath);
-
+            BackupFile(outPath);
             bnd.Write(outPath);
         }
     }

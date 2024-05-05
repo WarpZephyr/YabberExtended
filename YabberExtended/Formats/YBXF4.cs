@@ -48,12 +48,14 @@ namespace YabberExtended
             bxf.Unk04 = bool.Parse(xml.SelectSingleNode("bxf4/unk04").InnerText);
             bxf.Unk05 = bool.Parse(xml.SelectSingleNode("bxf4/unk05").InnerText);
 
-            YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf4/files"), sourceDir);
+            XmlNodeList? fileNodes = xml.SelectNodes("bxf4/files/file");
+            if (fileNodes != null)
+                YBinder.ReadBinderFiles(bxf, fileNodes, sourceDir);
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
-            YBUtil.Backup(bhdPath);
+            YabberUtil.BackupFile(bhdPath);
             string bdtPath = $"{targetDir}\\{bdtFilename}";
-            YBUtil.Backup(bdtPath);
+            YabberUtil.BackupFile(bdtPath);
             bxf.Write(bhdPath, bdtPath);
         }
     }

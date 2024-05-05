@@ -50,7 +50,7 @@ namespace YabberExtended
             anc.AneData = File.ReadAllBytes($"{sourceDir}\\{aneName}");
 
             string outPath = $"{targetDir}\\{ancName}";
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             anc.Write(outPath);
         }
     }

@@ -2,7 +2,11 @@
 using System;
 using System.IO;
 using System.Xml;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions;
+using YabberExtended.Extensions.Hex;
+using YabberExtended.Extensions.Value;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -48,35 +52,30 @@ namespace YabberExtended
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-ldmu.xml"));
 
-            string bhdFilename = xml.SelectSingleNode("ldmu/bhd_filename").InnerText;
-            string bndFilename = xml.SelectSingleNode("ldmu/bnd_filename").InnerText;
-            bhd.Unk04 = FieldToInt32(xml.SelectSingleNode("ldmu/unk04").InnerText, "unk04");
+            string bhdFilename = xml.ReadStringOrThrowIfWhiteSpace("ldmu/bhd_filename");
+            string bndFilename = xml.ReadStringOrThrowIfWhiteSpace("ldmu/bnd_filename");
+            bhd.Unk04 = xml.ReadInt32("ldmu/unk04");
 
-            var filesNode = xml.SelectSingleNode("ldmu/files");
-            if (filesNode != null)
+            var fileNodes = xml.SelectNodes("ldmu/files/file");
+            if (fileNodes != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                foreach (XmlNode fileNode in fileNodes)
                 {
                     var file = new LDMU.File();
-                    string strID = fileNode.SelectSingleNode("id")?.InnerText;
-                    bool compress = FieldToBool(fileNode.SelectSingleNode("compress").InnerText, "compress");
-                    int id = FieldToInt32(strID, "id");
-                    byte[] unk10 = FieldToString(fileNode.SelectSingleNode("unk10").InnerText, "unk10").HexToBytes();
+                    string id = fileNode.GetXmlValueOrContents("id");
+                    bool compress = fileNode.ReadBoolean("compress");
+                    byte[] unk10 = xml.ReadStringOrThrowIfWhiteSpace("unk10").HexToBytes();
                     if (unk10.Length != 24)
                     {
-                        throw new FriendlyException("unk10 must be 24 bytes long.");
+                        throw new FriendlyException($"{nameof(LDMU.File.Unk10)} must be {24} bytes long.");
                     }
 
                     file.Compress = compress;
-                    file.ID = id;
+                    file.ID = id.ToInt32();
                     file.Unk10 = unk10;
 
-                    string inPath = Path.Combine(sourceDir, strID);
-                    if (!File.Exists(inPath))
-                    {
-                        throw new FriendlyException($"File not found: {inPath}");
-                    }
-
+                    string inPath = fileNode.GetFilePathNameOrUseID(sourceDir, id);
+                    FriendlyException.ThrowIfNotFile(inPath);
                     file.Bytes = File.ReadAllBytes(inPath);
                     bhd.Files.Add(file);
                 }
@@ -84,8 +83,8 @@ namespace YabberExtended
 
             string bhdPath = Path.Combine(targetDir, bhdFilename);
             string bndPath = Path.Combine(targetDir, bndFilename);
-            Backup(bhdPath);
-            Backup(bndPath);
+            BackupFile(bhdPath);
+            BackupFile(bndPath);
             bhd.Write(bhdPath, bndPath);
         }
     }

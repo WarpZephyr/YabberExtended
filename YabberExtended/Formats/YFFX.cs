@@ -18,7 +18,7 @@ namespace YabberExtended
                 ffx = FFXDLSE.XmlDeserialize(sr);
 
             string outPath = sourceFile.Replace(".ffx.xml", ".ffx").Replace(".ffx.dcx.xml", ".ffx.dcx");
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             ffx.Write(outPath);
         }
     }

@@ -61,14 +61,14 @@ namespace YabberExtended
             {
                 int id = int.Parse(textNode.Attributes["id"].InnerText);
                 // \r\n is drawn as two newlines ingame
-                string text = textNode.InnerText.Replace("\r", "");
+                string? text = textNode.InnerText.Replace("\r", "");
                 if (text == "%null%")
                     text = null;
                 fmg.Entries.Add(new FMG.Entry(id, text));
             }
 
             string outPath = sourceFile.Replace(".fmg.xml", ".fmg");
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             fmg.Write(outPath);
         }
     }

@@ -16,11 +16,11 @@ namespace YabberExtended
             {
                 BinderFileHeader file = bnd.Files[i];
 
-                string root = "";
+                string root = string.Empty;
                 string path;
                 if (Binder.HasNames(bnd.Format))
                 {
-                    path = YBUtil.UnrootBNDPath(file.Name, out root);
+                    path = YabberUtil.SplitBinderRootFromPath(file.Name, out root);
                 }
                 else if (Binder.HasIDs(bnd.Format))
                 {
@@ -37,16 +37,16 @@ namespace YabberExtended
                 if (Binder.HasIDs(bnd.Format))
                     xw.WriteElementString("id", file.ID.ToString());
 
-                if (root != "")
+                if (root != string.Empty)
                     xw.WriteElementString("root", root);
 
                 xw.WriteElementString("path", path);
 
-                string suffix = "";
-                if (pathCounts.ContainsKey(path))
+                string suffix = string.Empty;
+                if (pathCounts.TryGetValue(path, out int value))
                 {
-                    pathCounts[path]++;
-                    suffix = $" ({pathCounts[path]})";
+                    pathCounts[path] = ++value;
+                    suffix = $" ({value})";
                     xw.WriteElementString("suffix", suffix);
                 }
                 else
@@ -68,9 +68,9 @@ namespace YabberExtended
             xw.WriteEndElement();
         }
 
-        public static void ReadBinderFiles(IBinder bnd, XmlNode filesNode, string sourceDir)
+        public static void ReadBinderFiles(IBinder bnd, XmlNodeList fileNodes, string sourceDir)
         {
-            foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+            foreach (XmlNode fileNode in fileNodes)
             {
                 if (fileNode.SelectSingleNode("path") == null)
                     throw new FriendlyException("File node missing path tag.");
@@ -93,8 +93,7 @@ namespace YabberExtended
                     throw new FriendlyException($"Could not parse compression type: {strCompression}\nCompression type must be a valid DCX Type.");
 
                 string inPath = $@"{sourceDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
-                if (!File.Exists(inPath))
-                    throw new FriendlyException($"File not found: {inPath}");
+                FriendlyException.ThrowIfNotFile(inPath);
 
                 byte[] bytes = File.ReadAllBytes(inPath);
                 bnd.Files.Add(new BinderFile(flags, id, name, bytes)

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace YabberExtended
 {
@@ -84,16 +85,14 @@ namespace YabberExtended
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    using (Process current = Process.GetCurrentProcess())
-                    {
-                        var admin = new Process();
-                        admin.StartInfo = current.StartInfo;
-                        admin.StartInfo.FileName = current.MainModule.FileName;
-                        admin.StartInfo.Arguments = Environment.CommandLine.Replace($"\"{Environment.GetCommandLineArgs()[0]}\"", "");
-                        admin.StartInfo.Verb = "runas";
-                        admin.Start();
-                        return;
-                    }
+                    using Process current = Process.GetCurrentProcess();
+                    var admin = new Process();
+                    admin.StartInfo = current.StartInfo;
+                    admin.StartInfo.FileName = current.MainModule.FileName;
+                    admin.StartInfo.Arguments = Environment.CommandLine.Replace($"\"{Environment.GetCommandLineArgs()[0]}\"", "");
+                    admin.StartInfo.Verb = "runas";
+                    admin.Start();
+                    return;
                 }
                 catch (FriendlyException ex)
                 {
@@ -135,20 +134,16 @@ namespace YabberExtended
                 if (BND3.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
-                    using (var bnd = new BND3Reader(bytes))
-                    {
-                        bnd.Compression = compression;
-                        bnd.Unpack(filename, targetDir, progress);
-                    }
+                    using var bnd = new BND3Reader(bytes);
+                    bnd.Compression = compression;
+                    bnd.Unpack(filename, targetDir, progress);
                 }
                 else if (BND4.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking BND4: {filename}...");
-                    using (var bnd = new BND4Reader(bytes))
-                    {
-                        bnd.Compression = compression;
-                        bnd.Unpack(filename, targetDir, progress);
-                    }
+                    using var bnd = new BND4Reader(bytes);
+                    bnd.Compression = compression;
+                    bnd.Unpack(filename, targetDir, progress);
                 }
                 else if (FFXDLSE.Is(bytes))
                 {
@@ -189,26 +184,20 @@ namespace YabberExtended
                 if (BND3.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
-                    using (var bnd = new BND3Reader(sourceFile))
-                    {
-                        bnd.Unpack(filename, targetDir, progress);
-                    }
+                    using var bnd = new BND3Reader(sourceFile);
+                    bnd.Unpack(filename, targetDir, progress);
                 }
                 else if (BND4.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND4: {filename}...");
-                    using (var bnd = new BND4Reader(sourceFile))
-                    {
-                        bnd.Unpack(filename, targetDir, progress);
-                    }
+                    using var bnd = new BND4Reader(sourceFile);
+                    bnd.Unpack(filename, targetDir, progress);
                 }
                 else if (BND2.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND2: {filename}...");
-                    using (var bnd = new BND2Reader(sourceFile))
-                    {
-                        bnd.Unpack(filename, targetDir, progress);
-                    }
+                    using var bnd = new BND2Reader(sourceFile);
+                    bnd.Unpack(filename, targetDir, progress);
                 }
                 else if (SoulsFormats.AC3SL.BND.Is(sourceFile))
                 {
@@ -252,10 +241,8 @@ namespace YabberExtended
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF3: {filename}...");
-                        using (var bxf = new BXF3Reader(sourceFile, bdtPath))
-                        {
-                            bxf.Unpack(filename, bdtFilename, targetDir, progress);
-                        }
+                        using var bxf = new BXF3Reader(sourceFile, bdtPath);
+                        bxf.Unpack(filename, bdtFilename, targetDir, progress);
                     }
                     else
                     {
@@ -271,10 +258,8 @@ namespace YabberExtended
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF4: {filename}...");
-                        using (var bxf = new BXF4Reader(sourceFile, bdtPath))
-                        {
-                            bxf.Unpack(filename, bdtFilename, targetDir, progress);
-                        }
+                        using var bxf = new BXF4Reader(sourceFile, bdtPath);
+                        bxf.Unpack(filename, bdtFilename, targetDir, progress);
                     }
                     else
                     {
@@ -501,6 +486,11 @@ namespace YabberExtended
                 Console.WriteLine($"Repacking ACE3 BND: {sourceName}...");
                 YBNDACE3.Repack(sourceDir, targetDir);
             }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-acparts4.xml")))
+            {
+                Console.WriteLine($"Repacking AcParts4: {sourceName}...");
+                YAcParts4.Repack(sourceDir, targetDir);
+            }
             else
             {
                 Console.WriteLine($"Yabber XML not found in: {sourceName}");
@@ -522,33 +512,41 @@ namespace YabberExtended
         }
 
         private static string PromptVersion(string format, params string[] options)
+            => PromptOption($"Please choose a version for {format}:", options);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string PromptOption(string? promptMessage = null, params string[] options)
+            => PromptOption(promptMessage, null, options);
+
+        private static string PromptOption(string? promptMessage = null, string? errorMessage = null, params string[] options)
         {
-            Console.WriteLine($"Please choose a version for {format}:");
-            Console.WriteLine($"Options:");
+            promptMessage ??= "Please choose an option:";
+            errorMessage ??= "That option is not supported.";
+            Console.WriteLine(promptMessage);
             for (int i = 0; i < options.Length; i++)
             {
                 int num = i + 1;
                 Console.WriteLine($"{num}: {options[i]}");
             }
 
-            string version = Console.ReadLine().Trim();
-            if (Array.IndexOf(options, version) == -1)
+            string option = Console.ReadLine().Trim();
+            if (Array.IndexOf(options, option) == -1)
             {
-                if (!int.TryParse(version, out int chosenNum))
+                if (!int.TryParse(option, out int chosenNum))
                 {
-                    throw new FriendlyException("That option is not supported.");
+                    throw new FriendlyException(errorMessage);
                 }
 
                 int index = chosenNum - 1;
                 if (index >= options.Length)
                 {
-                    throw new FriendlyException("That option is not supported.");
+                    throw new FriendlyException(errorMessage);
                 }
 
-                version = options[index];
+                option = options[index];
             }
 
-            return version;
+            return option;
         }
     }
 }

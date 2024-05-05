@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace YabberExtended
+namespace YabberExtended.Extensions.Hex
 {
-    internal static class HexHelper
+    public static class HexExtensions
     {
-        internal static byte[] HexToBytes(this string str)
+        public static byte[] HexToBytes(this string str)
         {
-            string cleanInput = CleanInput(str);
+            string cleanInput = CleanHexInput(str);
             if (cleanInput.Length % 2 != 0)
             {
-                throw new Exception("Hex length was not even.");
+                throw new ParseException("Hex length was not even.");
             }
 
             int length = cleanInput.Length / 2;
@@ -23,7 +23,7 @@ namespace YabberExtended
             return bytes;
         }
 
-        internal static string ToHex(this byte[] bytes)
+        public static string ToHex(this byte[] bytes)
         {
             string str = string.Empty;
             for (int i = 0; i < bytes.Length; i++)
@@ -33,12 +33,12 @@ namespace YabberExtended
             return str;
         }
 
-        internal static bool IsHex(this char c)
+        public static bool IsHex(this char c)
             => (c >= '0' && c <= '9')
                 || (c >= 'a' && c <= 'f')
                 || (c >= 'A' && c <= 'F');
 
-        internal static bool IsHex(this string str)
+        public static bool IsHex(this string str)
         {
             if (str.Length % 2 != 0)
             {
@@ -56,9 +56,9 @@ namespace YabberExtended
             return true;
         }
 
-        static string CleanInput(string input)
+        private static string CleanHexInput(string input)
         {
-            List<char> chars = new List<char>();
+            var chars = new List<char>();
             foreach (char c in input)
             {
                 if (c.IsHex())

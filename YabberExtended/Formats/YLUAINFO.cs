@@ -51,7 +51,7 @@ namespace YabberExtended
             }
 
             string outPath = sourceFile.Replace(".luainfo.xml", ".luainfo");
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             info.Write(outPath);
         }
     }

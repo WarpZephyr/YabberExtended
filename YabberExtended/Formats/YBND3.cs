@@ -75,11 +75,12 @@ namespace YabberExtended
                 throw new FriendlyException($"Could not parse unk18: {strUnk18}\nUnk18 must be a hex value.");
             }
 
-            if (xml.SelectSingleNode("bnd3/files") != null)
-                YBinder.ReadBinderFiles(bnd, xml.SelectSingleNode("bnd3/files"), sourceDir);
+            XmlNodeList? fileNodes = xml.SelectNodes("bnd3/files/file");
+            if (fileNodes != null)
+                YBinder.ReadBinderFiles(bnd, fileNodes, sourceDir);
 
             string outPath = $"{targetDir}\\{filename}";
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             bnd.Write(outPath);
         }
     }

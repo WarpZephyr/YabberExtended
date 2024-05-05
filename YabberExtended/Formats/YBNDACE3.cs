@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using SoulsFormats.ACE3;
-using static YabberExtended.YBUtil;
+using YabberExtended.Extensions;
+using YabberExtended.Extensions.Value;
+using YabberExtended.Extensions.Xml;
+using static YabberExtended.YabberUtil;
 
 namespace YabberExtended
 {
@@ -47,30 +51,25 @@ namespace YabberExtended
             var xml = new XmlDocument();
             xml.Load(Path.Combine(sourceDir, "_yabber-bnd_ace3.xml"));
 
-            string binderName = FieldToString(xml.SelectSingleNode("bnd_ace3/binder_name")?.InnerText, "binder_name");
-            bnd.Lite = FieldToBool(xml.SelectSingleNode("bnd_ace3/lite")?.InnerText, "lite");
-            bnd.Flag1 = FieldToByte(xml.SelectSingleNode("bnd_ace3/flag1")?.InnerText, "flag1");
-            bnd.Flag2 = FieldToByte(xml.SelectSingleNode("bnd_ace3/flag2")?.InnerText, "flag2");
+            string binderName = xml.ReadStringOrThrowIfWhiteSpace("bnd_ace3/binder_name");
+            bnd.Lite = xml.ReadBoolean("bnd_ace3/lite");
+            bnd.Flag1 = xml.ReadByte("bnd_ace3/flag1");
+            bnd.Flag2 = xml.ReadByte("bnd_ace3/flag2");
 
-            var filesNode = xml.SelectSingleNode("bnd_ace3/files");
-            if (filesNode != null)
+            var fileNodes = xml.SelectNodes("bnd_ace3/files/file");
+            if (fileNodes != null)
             {
-                foreach (XmlNode fileNode in filesNode.SelectNodes("file"))
+                foreach (XmlNode fileNode in fileNodes)
                 {
-                    int id = FieldToInt32(fileNode.SelectSingleNode("id")?.InnerText, "id");
-
-                    string inPath = Path.Combine(sourceDir, id.ToString());
-
-                    if (!File.Exists(inPath))
-                        throw new FriendlyException($"File not found: {inPath}");
-
-                    inPath = CorrectDirectorySeparator(inPath);
-                    bnd.Files.Add(new BND.File(id, File.ReadAllBytes(inPath)));
+                    string id = fileNode.GetXmlValueOrContents("id");
+                    string inPath = fileNode.GetFilePathNameOrUseID(sourceDir, id);
+                    FriendlyException.ThrowIfNotFile(inPath);
+                    bnd.Files.Add(new BND.File(id.ToInt32(), File.ReadAllBytes(inPath)));
                 }
             }
 
             string outPath = Path.Combine(targetDir, binderName);
-            Backup(outPath);
+            BackupFile(outPath);
 
             bnd.Write(outPath);
         }

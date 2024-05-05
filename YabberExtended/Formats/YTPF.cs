@@ -1,7 +1,6 @@
 ﻿using SoulsFormats;
 using System;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
 namespace YabberExtended
@@ -157,7 +156,7 @@ namespace YabberExtended
             }
 
             string outPath = $"{targetDir}\\{filename}";
-            YBUtil.Backup(outPath);
+            YabberUtil.BackupFile(outPath);
             tpf.Write(outPath);
         }
     }
