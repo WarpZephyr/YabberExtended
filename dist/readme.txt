@@ -1,5 +1,5 @@
 
---| YabberExtended 1.0.8
+--| YabberExtended 1.1.0
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -14,9 +14,12 @@ https://www.nexusmods.com/sekiro/mods/26
 Also does not support encrypted files (enc_regulation.bnd.dcx in DS2, Data0.bdt in DS3); you can edit these with Yapped or unpack them with BinderTool.
 https://www.nexusmods.com/darksouls3/mods/306
 https://github.com/Atvaark/BinderTool
-Requires .NET 4.7.2 - Windows 10 users should already have this.
+
+Requires .NET 4.7.2 for versions older than 1.1.0: - Windows 10 users should already have this.
 https://www.microsoft.com/net/download/thank-you/net472
 
+Requires .NET 8.0 for versions 1.1.0 and up: - .NET Runtime is required at a minimum.
+https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 
 --| YabberExtended.exe
 
@@ -136,3 +139,11 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 1.0.8
 	Improved BND2 support
 	Added AC4 and ACFA AcParts unpacking support
+
+1.1.0
+	Upgraded to .NET 8.0
+	Added many text and XML class extensions for easy numeric data parsing
+	Majorly reorganized some files
+	Made minor changes to some BND classes
+	Fixed many AcParts4 unpack issues
+	Added AcParts4 repacking support

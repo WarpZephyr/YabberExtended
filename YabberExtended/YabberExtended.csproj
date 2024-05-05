@@ -29,7 +29,9 @@
     <Configuration>Release</Configuration>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="icon.ico" />
+    <Content Include="..\dist\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SoulsFormatsExtended\SoulsFormats\SoulsFormatsExtended.csproj" />

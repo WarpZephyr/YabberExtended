@@ -3,7 +3,9 @@ An unpacker/repacker for common Demon's Souls, Dark Souls 1-3, Bloodborne, and S
 In order to decompress Sekiro files you must copy oo2core_6_win64.dll from Sekiro into Yabber's lib folder.  
 Does not support dvdbnds (the very large bhd/bdt pairs in the main game directory); use [UDSFM](https://www.nexusmods.com/darksouls/mods/1304) or [UXM](https://www.nexusmods.com/sekiro/mods/26) to unpack those first.  
 Also does not support encrypted files (enc_regulation.bnd.dcx in DS2, Data0.bdt in DS3); you can edit these with [Yapped](https://www.nexusmods.com/darksouls3/mods/306) or unpack them with [BinderTool](https://github.com/Atvaark/BinderTool).  
-Requires [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472) - Windows 10 users should already have this.  
+Requires [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472) for versions older than 1.1.0 - Windows 10 users should already have this.  
+Requires [.NET 8.0][https://dotnet.microsoft.com/en-us/download/dotnet/8.0] for versions 1.1.0 and up - .NET Runtime is required at a minimum.
+
 [NexusMods Page](https://www.nexusmods.com/sekiro/mods/42)  
 
 Please see the included readme for detailed instructions.  
@@ -45,3 +47,11 @@ https://github.com/JKAnderson/Yabber
 ### 1.0.8
 * Improved BND2 support
 * Added AC4 and ACFA AcParts unpacking support
+
+### 1.1.0
+* Upgraded to .NET 8.0
+* Added many text and XML class extensions for easy numeric data parsing
+* Majorly reorganized some files
+* Made minor changes to some BND classes
+* Fixed many AcParts4 unpack issues
+* Added AcParts4 repacking support
