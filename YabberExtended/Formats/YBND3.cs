@@ -22,6 +22,7 @@ namespace YabberExtended
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
             xw.WriteElementString("bitbigendian", bnd.BitBigEndian.ToString());
             xw.WriteElementString("unk18", $"0x{bnd.Unk18:X}");
+            xw.WriteElementString("writefileheadersend", bnd.WriteFileHeadersEnd.ToString());
             YBinder.WriteBinderFiles(bnd, xw, targetDir, progress);
 
             xw.WriteEndElement();
@@ -44,6 +45,7 @@ namespace YabberExtended
             string strBigEndian = xml.SelectSingleNode("bnd3/bigendian")?.InnerText ?? "False";
             string strBitBigEndian = xml.SelectSingleNode("bnd3/bitbigendian")?.InnerText ?? "False";
             string strUnk18 = xml.SelectSingleNode("bnd3/unk18")?.InnerText ?? "0x0";
+            string strWriteFileHeadersEnd = xml.SelectSingleNode("bnd3/writefileheadersend")?.InnerText ?? "True";
 
             if (!Enum.TryParse(strCompression, out DCX.Type compression))
                 throw new FriendlyException($"Could not parse compression type: {strCompression}");
@@ -74,6 +76,10 @@ namespace YabberExtended
             {
                 throw new FriendlyException($"Could not parse unk18: {strUnk18}\nUnk18 must be a hex value.");
             }
+
+            if (!bool.TryParse(strWriteFileHeadersEnd, out bool writeFileHeadersEnd))
+                writeFileHeadersEnd = true;
+            bnd.WriteFileHeadersEnd = writeFileHeadersEnd;
 
             XmlNodeList? fileNodes = xml.SelectNodes("bnd3/files/file");
             if (fileNodes != null)

@@ -95,7 +95,7 @@ namespace YabberExtended
             {
                 foreach (XmlNode fileNode in fileNodes)
                 {
-                    int id = xml.ReadInt32("id");
+                    int id = fileNode.ReadInt32("id");
                     string name = fileNode.ReadStringOrDefault("name", id.ToString());
                     string inPath = Path.Combine(sourceDir, name);
 
