@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.0
+--| YabberExtended 1.1.3
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -147,3 +147,14 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 	Made minor changes to some BND classes
 	Fixed many AcParts4 unpack issues
 	Added AcParts4 repacking support
+
+1.1.1
+	Added write file headers end option to BND3
+	Fixed BND KUON repack error, fixed BND KUON not writing correct version number during repack
+
+1.1.2
+	Made a minor change to BND KUON padding on repack.
+
+1.1.3
+	Updated Zero3 unpacking.
+	Added DDL unpacking.

@@ -1,4 +1,5 @@
-﻿using SoulsFormats.AC4;
+﻿using System;
+using SoulsFormats.AC4;
 using System.IO;
 
 namespace YabberExtended
@@ -9,8 +10,14 @@ namespace YabberExtended
         {
             foreach (Zero3.File file in z3.Files)
             {
-                string outPath = $@"{targetDir}\{file.Name.Replace('/', '\\')}";
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath));
+                string name = file.Name.Replace('/', '\\');
+                if (name.Length > 2 && name[1] == ':')
+                {
+                    name = name[2..];
+                }
+
+                string outPath = Path.Combine(targetDir, name);
+                Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? throw new Exception($"Could not get folder name for: {outPath}"));
                 File.WriteAllBytes(outPath, file.Bytes);
             }
         }

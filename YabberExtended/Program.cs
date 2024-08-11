@@ -295,23 +295,29 @@ namespace YabberExtended
                     TPF tpf = TPF.Read(sourceFile);
                     tpf.Unpack(filename, targetDir, progress);
                 }
-                else if (Zero3.Is(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking 000: {filename}...");
-                    Zero3 z3 = Zero3.Read(sourceFile);
-                    z3.Unpack(targetDir);
-                }
                 else if (ANC.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking ANC: {filename}...");
                     ANC anc = ANC.Read(sourceFile);
                     anc.Unpack(filename, targetDir);
                 }
+                else if (DDL.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking DDL: {filename}...");
+                    DDL ddl = DDL.Read(sourceFile);
+                    ddl.Unpack(targetDir);
+                }
                 else if (MQB.Is(sourceFile))
                 {
                     Console.WriteLine($"Converting MQB: {filename}...");
                     MQB mqb = MQB.Read(sourceFile);
                     mqb.Unpack(filename, sourceDir, progress);
+                }
+                else if (sourceFile.EndsWith(".000"))
+                {
+                    Console.WriteLine($"Unpacking 000: {filename}...");
+                    Zero3 z3 = Zero3.Read(sourceFile);
+                    z3.Unpack(targetDir);
                 }
                 else if (sourceFile.EndsWith(".ffx.xml") || sourceFile.EndsWith(".ffx.dcx.xml"))
                 {
