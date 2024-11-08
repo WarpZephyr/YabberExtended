@@ -1,7 +1,5 @@
 ﻿using SoulsFormats;
-using SoulsFormats.AC4;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -374,6 +372,17 @@ namespace YabberExtended
                     Console.WriteLine($"Converting XML to MQB: {filename}...");
                     YMQB.Repack(sourceFile);
                 }
+                else if (filename.EndsWith(".mlb", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Unpacking AC4 MLB...");
+                    MLB_AC4 mlb = MLB_AC4.Read(sourceFile);
+                    mlb.Unpack(sourceFile);
+                }
+                else if (filename.EndsWith(".mlb.ac4.xml", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Repacking AC4 MLB...");
+                    YMLB_AC4.Repack(sourceFile);
+                }
                 else if (filename.EndsWith("DATA.BIN", StringComparison.InvariantCultureIgnoreCase))
                 {
                     int entryCount;
@@ -535,7 +544,7 @@ namespace YabberExtended
                 Console.WriteLine($"{num}: {options[i]}");
             }
 
-            string option = Console.ReadLine().Trim();
+            string option = Console.ReadLine()?.Trim() ?? string.Empty;
             if (Array.IndexOf(options, option) == -1)
             {
                 if (!int.TryParse(option, out int chosenNum))

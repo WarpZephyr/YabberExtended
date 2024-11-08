@@ -1,6 +1,6 @@
 ﻿using System;
-using SoulsFormats.AC4;
 using System.IO;
+using SoulsFormats;
 
 namespace YabberExtended
 {

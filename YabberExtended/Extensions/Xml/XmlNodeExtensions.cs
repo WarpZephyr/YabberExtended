@@ -315,8 +315,7 @@ namespace YabberExtended.Extensions.Xml
         public static string ReadString(this XmlNode node, string xpath)
             => node.GetNodeOrThrow(xpath).InnerText;
 
-        [return: NotNullIfNotNull(nameof(defaultValue))]
-        public static string? ReadStringOrDefault(this XmlNode node, string xpath, string? defaultValue = default)
+        public static string ReadStringOrDefault(this XmlNode node, string xpath, string defaultValue = "")
         {
             XmlNode? child = node.SelectSingleNode(xpath);
             return child?.InnerText ?? defaultValue;
