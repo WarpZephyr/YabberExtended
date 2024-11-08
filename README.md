@@ -55,3 +55,17 @@ https://github.com/JKAnderson/Yabber
 * Made minor changes to some BND classes
 * Fixed many AcParts4 unpack issues
 * Added AcParts4 repacking support
+
+### 1.1.1
+* Added write file headers end option to BND3
+* Fixed BND KUON repack error, fixed BND KUON not writing correct version number during repack
+
+### 1.1.2
+* Made a minor change to BND KUON padding on repack.
+
+### 1.1.3
+* Updated Zero3 unpacking.
+* Added DDL unpacking.
+
+### 1.1.4
+* Added MLB unpack and repack support for AC4 and ACFA US PS3.

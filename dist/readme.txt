@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.3
+--| YabberExtended 1.1.4
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -101,6 +101,11 @@ A format that holds part stats in Armored Core 4 and Armored Core For Answer, th
 AcParts.bin has all parts for playable ACs except for stabilizers which are moved to Stabilizer.bin.
 EnemyParts.bin has FCS and Arm Unit (Weapon) parts for enemies that use non-playable things.
 
+MLB
+Extension: .mlb
+A format that holds a list of resources being loaded for a 3d resource archive, along with configuration of some kind for them.
+The games that make use of them use them to find files in an archive.
+
 --| Contributors
 
 katalash - GPARAM support on Yabber
@@ -158,3 +163,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 1.1.3
 	Updated Zero3 unpacking.
 	Added DDL unpacking.
+
+1.1.4
+	Added MLB unpack and repack support for AC4 and ACFA US PS3.
