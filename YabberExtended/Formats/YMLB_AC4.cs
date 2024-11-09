@@ -54,21 +54,21 @@ namespace YabberExtended
                         resource = new MLB_AC4.Model();
                         resource.Path = resourceNode.ReadString("path");
                         resource.RelativePath = resourceNode.ReadString("relativePath");
-                        RepackModel(mlb, (MLB_AC4.Model)resource, resourceNode);
+                        RepackModel((MLB_AC4.Model)resource, resourceNode);
                     }
                     else if (mlb.Type == MLB_AC4.ResourceType.Model && mlb.IsAnimation)
                     {
                         resource = new MLB_AC4.Animation();
                         resource.Path = resourceNode.ReadString("path");
                         resource.RelativePath = resourceNode.ReadString("relativePath");
-                        RepackAnimation(mlb, (MLB_AC4.Animation)resource, resourceNode);
+                        RepackAnimation((MLB_AC4.Animation)resource, resourceNode);
                     }
                     else if (mlb.Type == MLB_AC4.ResourceType.Texture)
                     {
                         resource = new MLB_AC4.Texture();
                         resource.Path = resourceNode.ReadString("path");
                         resource.RelativePath = resourceNode.ReadString("relativePath");
-                        RepackTexture(mlb, (MLB_AC4.Texture)resource, resourceNode);
+                        RepackTexture((MLB_AC4.Texture)resource, resourceNode);
                     }
                     else
                     {
@@ -434,7 +434,7 @@ namespace YabberExtended
 
         #region Model
 
-        private static void RepackModel(MLB_AC4 mlb, MLB_AC4.Model resource, XmlNode node)
+        private static void RepackModel(MLB_AC4.Model resource, XmlNode node)
         {
             XmlNodeList? materialNodes = node.SelectNodes("materials/material");
             if (materialNodes != null)
@@ -545,22 +545,22 @@ namespace YabberExtended
                 bone.HasConfig1 = false;
             }
 
-            XmlNode? breakConfigNode = node.SelectSingleNode("breakConfig");
-            if (breakConfigNode != null)
+            XmlNode? breakNode = node.SelectSingleNode("breakConfig");
+            if (breakNode != null)
             {
                 bone.HasBreakConfig = true;
-                RepackBoneBreakConfig(bone.BreakConfig, breakConfigNode);
+                RepackBoneBreakConfig(bone.BreakConfig, breakNode);
             }
             else
             {
                 bone.HasBreakConfig = false;
             }
 
-            XmlNode? collisionConfigNode = node.SelectSingleNode("collisionConfig");
-            if (collisionConfigNode != null)
+            XmlNode? collisionNode = node.SelectSingleNode("collisionConfig");
+            if (collisionNode != null)
             {
                 bone.HasCollisionConfig = true;
-                bone.CollisionConfig.Unk00 = collisionConfigNode.ReadInt16OrDefault("unk00");
+                bone.CollisionConfig.Unk00 = collisionNode.ReadInt16OrDefault("unk00");
             }
             else
             {
@@ -715,7 +715,7 @@ namespace YabberExtended
 
         #region Animation
 
-        private static void RepackAnimation(MLB_AC4 mlb, MLB_AC4.Animation resource, XmlNode node)
+        private static void RepackAnimation(MLB_AC4.Animation resource, XmlNode node)
         {
             XmlNodeList? boneNodes = node.SelectNodes("bones/bone");
             if (boneNodes != null)
@@ -758,7 +758,7 @@ namespace YabberExtended
 
         #region Texture
 
-        private static void RepackTexture(MLB_AC4 mlb, MLB_AC4.Texture resource, XmlNode node)
+        private static void RepackTexture(MLB_AC4.Texture resource, XmlNode node)
         {
             resource.FileArgument = node.ReadStringOrDefault("fileArg", "-file");
             resource.TypeArgument = node.ReadStringOrDefault("typeArg", "[32bit]");

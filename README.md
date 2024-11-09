@@ -69,3 +69,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.1.4
 * Added MLB unpack and repack support for AC4 and ACFA US PS3.
+
+### 1.1.5
+* Added MLB unpack and repack support for ACV and ACVD US PS3.

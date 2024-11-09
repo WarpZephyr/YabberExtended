@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.4
+--| YabberExtended 1.1.5
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -130,7 +130,7 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 1.0.4
 	Fixed BND3 writing extra field by mistake in SoulsFormatsExtended
 	Fixed BND3 using BigEndian and not BitBigEndian field for flags when writing format
-	
+
 1.0.5
 	Added LDMU support
 	Added basic FSDATA support
@@ -140,7 +140,7 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.0.7
 	Fixed TPF padding issues, mainly aimed at Armored Core Verdict Day for now.
-	
+
 1.0.8
 	Improved BND2 support
 	Added AC4 and ACFA AcParts unpacking support
@@ -166,3 +166,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.1.4
 	Added MLB unpack and repack support for AC4 and ACFA US PS3.
+
+1.1.5
+	Added MLB unpack and repack support for ACV and ACVD US PS3.

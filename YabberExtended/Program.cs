@@ -9,6 +9,8 @@ namespace YabberExtended
 {
     class Program
     {
+        static readonly string[] MLBOptions = new string[] { "AC4", "AC5" };
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -374,14 +376,29 @@ namespace YabberExtended
                 }
                 else if (filename.EndsWith(".mlb", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Console.WriteLine($"Unpacking AC4 MLB...");
-                    MLB_AC4 mlb = MLB_AC4.Read(sourceFile);
-                    mlb.Unpack(sourceFile);
+                    string option = PromptOption("File detected as MLB by extension, which generation is this MLB?", MLBOptions);
+                    if (option == MLBOptions[0])
+                    {
+                        Console.WriteLine($"Unpacking AC4 MLB...");
+                        MLB_AC4 mlb = MLB_AC4.Read(sourceFile);
+                        mlb.Unpack(sourceFile);
+                    }
+                    else if (option == MLBOptions[1])
+                    {
+                        Console.WriteLine($"Unpacking AC5 MLB...");
+                        MLB_AC5 mlb = MLB_AC5.Read(sourceFile);
+                        mlb.Unpack(sourceFile);
+                    }
                 }
                 else if (filename.EndsWith(".mlb.ac4.xml", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Console.WriteLine($"Repacking AC4 MLB...");
                     YMLB_AC4.Repack(sourceFile);
+                }
+                else if (filename.EndsWith(".mlb.ac5.xml", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Repacking AC5 MLB...");
+                    YMLB_AC5.Repack(sourceFile);
                 }
                 else if (filename.EndsWith("DATA.BIN", StringComparison.InvariantCultureIgnoreCase))
                 {
