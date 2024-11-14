@@ -551,13 +551,13 @@ namespace YabberExtended
                     endIndex = value.IndexOf(']', startIndex);
                 }
 
-                int length = endIndex - startIndex;
                 if (endIndex < 0)
                 {
                     return string.Empty;
                 }
                 else
                 {
+                    int length = endIndex - startIndex;
                     return value.Substring(startIndex, length);
                 }
             }
