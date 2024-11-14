@@ -499,20 +499,19 @@ namespace YabberExtended
         {
             try
             {
-                object value = str;
                 switch (type)
                 {
-                    case MQB.CustomData.DataType.Bool: return Convert.ToBoolean(value);
-                    case MQB.CustomData.DataType.SByte: return Convert.ToSByte(value);
-                    case MQB.CustomData.DataType.Byte: return Convert.ToByte(value);
-                    case MQB.CustomData.DataType.Short: return Convert.ToInt16(value);
-                    case MQB.CustomData.DataType.Int: return Convert.ToInt32(value);
-                    case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(value);
-                    case MQB.CustomData.DataType.Float: return Convert.ToSingle(value);
+                    case MQB.CustomData.DataType.Bool: return Convert.ToBoolean(str);
+                    case MQB.CustomData.DataType.SByte: return Convert.ToSByte(str);
+                    case MQB.CustomData.DataType.Byte: return Convert.ToByte(str);
+                    case MQB.CustomData.DataType.Short: return Convert.ToInt16(str);
+                    case MQB.CustomData.DataType.Int: return Convert.ToInt32(str);
+                    case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(str);
+                    case MQB.CustomData.DataType.Float: return Convert.ToSingle(str);
                     case MQB.CustomData.DataType.String: return str;
                     case MQB.CustomData.DataType.Custom: return str.FriendlyHexToByteArray();
-                    case MQB.CustomData.DataType.Color: return ConvertValueToColor(value);
-                    case MQB.CustomData.DataType.IntColor: return ConvertValueToColor(value);
+                    case MQB.CustomData.DataType.Color: return ConvertValueToColor(str);
+                    case MQB.CustomData.DataType.IntColor: return ConvertValueToColor(str);
                     case MQB.CustomData.DataType.Vector:
                         switch (memberCount)
                         {
@@ -530,19 +529,80 @@ namespace YabberExtended
             }
         }
 
-        public static object ConvertValueToColor(object value)
+        public static object ConvertValueToColor(string value)
         {
-            string invalidChars = ",] ";
-            string str = value.ToString();
-            string alphaStr = str.Substring(str.IndexOf("A=") + 2, 3).TrimEnd(invalidChars.ToCharArray());
-            string redStr = str.Substring(str.IndexOf("R=") + 2, 3).TrimEnd(invalidChars.ToCharArray());
-            string greenStr = str.Substring(str.IndexOf("G=") + 2, 3).TrimEnd(invalidChars.ToCharArray());
-            string blueStr = str.Substring(str.IndexOf("B=") + 2, 3).TrimEnd(invalidChars.ToCharArray());
+            string GetComponent(string component)
+            {
+                int componentIndex = value.IndexOf(component);
+                if (componentIndex < 0)
+                {
+                    return string.Empty;
+                }
 
-            int alpha = int.Parse(alphaStr);
-            int red = int.Parse(redStr);
-            int green = int.Parse(greenStr);
-            int blue = int.Parse(blueStr);
+                int startIndex = componentIndex + component.Length;
+                if (startIndex >= value.Length)
+                {
+                    return string.Empty;
+                }
+
+                int endIndex = value.IndexOf(',', startIndex);
+                if (endIndex < 0)
+                {
+                    endIndex = value.IndexOf(']', startIndex);
+                }
+
+                int length = endIndex - startIndex;
+                if (endIndex < 0)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    return value.Substring(startIndex, length);
+                }
+            }
+
+            static string CleanComponent(string componentValue)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (char c in componentValue)
+                {
+                    if (char.IsDigit(c))
+                    {
+                        sb.Append(c);
+                    }
+                }
+
+                return sb.ToString();
+            }
+
+            static int ParseComponent(string componentValue, int defaultValue)
+            {
+                if (int.TryParse(componentValue, out int result))
+                {
+                    return result;
+                }
+
+                return defaultValue;
+            }
+
+            string alphaComponent = GetComponent("A=");
+            string redComponent = GetComponent("R=");
+            string greenComponent = GetComponent("G=");
+            string blueComponent = GetComponent("B=");
+            alphaComponent = CleanComponent(alphaComponent);
+            redComponent = CleanComponent(redComponent);
+            greenComponent = CleanComponent(greenComponent);
+            blueComponent = CleanComponent(blueComponent);
+            int alpha = ParseComponent(alphaComponent, 255);
+            int red = ParseComponent(redComponent, 0);
+            int green = ParseComponent(greenComponent, 0);
+            int blue = ParseComponent(blueComponent, 0);
+            alpha = Math.Clamp(alpha, 0, 255);
+            red = Math.Clamp(red, 0, 255);
+            green = Math.Clamp(green, 0, 255);
+            blue = Math.Clamp(blue, 0, 255);
+
             return Color.FromArgb(alpha, red, green, blue);
         }
 
