@@ -19,8 +19,8 @@
     <Description>Unpacker/repacker for FromSoftware file formats.</Description>
     <Company>WarpZephyr</Company>
     <Product>YabberExtended</Product>
-    <AssemblyVersion>1.1.5</AssemblyVersion>
-    <FileVersion>1.1.5</FileVersion>
+    <AssemblyVersion>1.1.6</AssemblyVersion>
+    <FileVersion>1.1.6</FileVersion>
     <BaseOutputPath>..\bin\</BaseOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

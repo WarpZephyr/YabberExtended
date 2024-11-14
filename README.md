@@ -72,3 +72,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.1.5
 * Added MLB unpack and repack support for ACV and ACVD US PS3.
+
+### 1.1.6
+* Fixed an issue for MQB repack where colors were not parsed correctly.

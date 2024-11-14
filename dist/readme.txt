@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.5
+--| YabberExtended 1.1.6
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -169,3 +169,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.1.5
 	Added MLB unpack and repack support for ACV and ACVD US PS3.
+
+1.1.6
+	Fixed an issue for MQB repack where colors were not parsed correctly.
