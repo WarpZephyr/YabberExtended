@@ -65,14 +65,21 @@ namespace YabberExtended
 
         #region Resource
 
-        private static void UnpackResource(XmlWriter xw, MLB_AC5 mlb, MLB_AC5.Model resource, int index)
+        private static void UnpackResource(XmlWriter xw, MLB_AC5 mlb, IMlbResource resource, int index)
         {
             xw.WriteStartElement("resource");
             xw.WriteElementString("path", resource.Path);
             xw.WriteElementString("relativePath", resource.RelativePath);
             if (mlb.Type == MLB_AC5.ResourceType.Model)
             {
-                UnpackModel(xw, resource);
+                if (resource is MLB_AC5.Model model)
+                {
+                    UnpackModel(xw, model);
+                }
+                else
+                {
+                    throw new NotSupportedException($"{nameof(IMlbResource)} {resource.GetType().Name} is not supported.");
+                }
             }
             else
             {

@@ -43,7 +43,7 @@ namespace YabberExtended
             {
                 foreach (XmlNode resourceNode in resourceNodes)
                 {
-                    MLB_AC4.IResource resource;
+                    IMlbResource resource;
                     bool isDummy = resourceNode.ReadBooleanOrDefault("isDummy", false);
                     if (isDummy)
                     {
@@ -88,7 +88,7 @@ namespace YabberExtended
 
         #region Resource
 
-        private static void UnpackResource(XmlWriter xw, MLB_AC4 mlb, MLB_AC4.IResource resource, int index)
+        private static void UnpackResource(XmlWriter xw, MLB_AC4 mlb, IMlbResource resource, int index)
         {
             xw.WriteStartElement("resource");
             if (resource is MLB_AC4.Dummy)
