@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.6
+--| YabberExtended 1.1.7
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -172,3 +172,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.1.6
 	Fixed an issue for MQB repack where colors were not parsed correctly.
+
+1.1.7
+	Fixed an issue in SoulsFormatsExtended where BND2 repack was not using AlignmentSize.

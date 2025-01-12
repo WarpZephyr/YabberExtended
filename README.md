@@ -75,3 +75,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.1.6
 * Fixed an issue for MQB repack where colors were not parsed correctly.
+
+### 1.1.7
+* Fixed an issue in SoulsFormatsExtended where BND2 repack was not using AlignmentSize.
