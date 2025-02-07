@@ -1,6 +1,7 @@
 ﻿using SoulsFormats;
 using System;
 using System.Xml;
+using YabberExtended.Extensions.Xml;
 
 namespace YabberExtended
 {
@@ -19,6 +20,7 @@ namespace YabberExtended
             xw.WriteElementString("version", fmg.Version.ToString());
             xw.WriteElementString("bigendian", fmg.BigEndian.ToString());
             xw.WriteElementString("unicode", fmg.Unicode.ToString());
+            xw.WriteElementString("reuseoffsets", fmg.ReuseOffsets.ToString());
             xw.WriteStartElement("entries");
 
             // I think they're sorted already, but whatever
@@ -56,6 +58,8 @@ namespace YabberExtended
             {
                 fmg.Unicode = bool.Parse(unicodeStr);
             }
+
+            fmg.ReuseOffsets = xml.ReadBooleanIfExists("fmg/reuseoffsets") ?? false;
 
             foreach (XmlNode textNode in xml.SelectNodes("fmg/entries/text"))
             {

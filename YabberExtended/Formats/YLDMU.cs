@@ -64,7 +64,7 @@ namespace YabberExtended
                     var file = new LDMU.File();
                     string id = fileNode.GetXmlValueOrContents("id");
                     bool compress = fileNode.ReadBoolean("compress");
-                    byte[] unk10 = xml.ReadStringOrThrowIfWhiteSpace("unk10").HexToBytes();
+                    byte[] unk10 = fileNode.ReadStringOrThrowIfWhiteSpace("unk10").HexToBytes();
                     if (unk10.Length != 24)
                     {
                         throw new FriendlyException($"{nameof(LDMU.File.Unk10)} must be {24} bytes long.");
