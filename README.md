@@ -78,3 +78,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.1.7
 * Fixed an issue in SoulsFormatsExtended where BND2 repack was not using AlignmentSize.
+
+### 1.1.8
+* Added reuse offsets option to FMG repacking.

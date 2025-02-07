@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.7
+--| YabberExtended 1.1.8
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -175,3 +175,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.1.7
 	Fixed an issue in SoulsFormatsExtended where BND2 repack was not using AlignmentSize.
+
+1.1.8
+	Added reuse offsets option to FMG repacking.
