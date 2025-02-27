@@ -85,3 +85,6 @@ https://github.com/JKAnderson/Yabber
 ### 1.1.9
 * Improved Zero3 unpack support.
 * Added Zero3 repack support.
+
+### 1.2.0
+* Fixed minor oversight in Zero3 repack.
