@@ -93,15 +93,24 @@ namespace YabberExtended
                 z3.SizeAlign = xml.ReadInt32OrDefault("zero3/sizealign");
                 z3.MaxFileSize = xml.ReadInt32OrDefault("zero3/maxfilesize");
                 z3.IsWrapped = xml.ReadBooleanOrDefault("zero3/iswrapped");
-                z3.WrapperVersion = xml.ReadStringOrDefault("zero3/wrapperversion", Zero3.DefaultWrapperVersion);
 
-                string wrappedName = xml.ReadStringOrDefault("zero3/wrappedname", backupWrapperName);
-                if (string.IsNullOrWhiteSpace(wrappedName))
+                if (z3.IsWrapped)
                 {
-                    throw new FriendlyException("zero3_name and wrappedname must not be empty or blank.");
-                }
+                    z3.WrapperVersion = xml.ReadStringOrDefault("zero3/wrapperversion", Zero3.DefaultWrapperVersion);
 
-                z3.WrappedName = wrappedName;
+                    string wrappedName = xml.ReadStringOrDefault("zero3/wrappedname", backupWrapperName);
+                    if (string.IsNullOrWhiteSpace(wrappedName))
+                    {
+                        throw new FriendlyException("zero3_name and wrappedname must not be empty or blank.");
+                    }
+
+                    z3.WrappedName = wrappedName;
+                }
+                else
+                {
+                    z3.WrapperVersion = string.Empty;
+                    z3.WrappedName = string.Empty;
+                }
             }
             else if (version == Zero3.FormatVersion.Murakumo)
             {
