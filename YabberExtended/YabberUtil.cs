@@ -53,6 +53,10 @@ namespace YabberExtended
             @"N:\NTC\data\Target\",
             @"N:\NTC\data\",
             @"N:\NTC\",
+
+            // Murakumo Renegade Mech Pursuit
+            @"V:\MK\DATA\",
+            @"V:\MK\"
         };
 
         /// <summary>

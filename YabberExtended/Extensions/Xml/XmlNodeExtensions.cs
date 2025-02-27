@@ -13,6 +13,9 @@ namespace YabberExtended.Extensions.Xml
         public static XmlNode GetNodeOrThrow(this XmlNode node, string xpath)
             => node.SelectSingleNode(xpath) ?? throw new InvalidDataException($"Node {node.Name} does not contain: {xpath}");
 
+        public static string GetNodeInnerTextOrThrow(this XmlNode node, string xpath)
+            => GetNodeOrThrow(node, xpath).InnerText;
+
         public static XmlAttributeCollection GetAttributesOrThrow(this XmlNode node)
             => node.Attributes ?? throw new InvalidDataException($"Node {node.Name} is missing attributes.");
 
@@ -101,8 +104,77 @@ namespace YabberExtended.Extensions.Xml
 
         #region Generic
 
+        private static bool TryBaseConvert<TValue>(string text, Func<string, int, TValue> baseConvert, [NotNullWhen(true)] out TValue? value) where TValue : IParsable<TValue>
+        {
+            if (text.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
+            {
+                value = baseConvert(text, 16);
+                return true;
+            }
+
+            if (text.StartsWith("0b", StringComparison.InvariantCultureIgnoreCase))
+            {
+                value = baseConvert(text, 2);
+                return true;
+            }
+
+            if (text.StartsWith("0o", StringComparison.InvariantCultureIgnoreCase))
+            {
+                value = baseConvert(text, 8);
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        private static TValue ReadValue<TValue>(this XmlNode node, string xpath, Func<string, int, TValue> baseConvert, IFormatProvider? provider = null) where TValue : IParsable<TValue>
+        {
+            string text = node.GetNodeInnerTextOrThrow(xpath);
+            if (TryBaseConvert(text, baseConvert, out TValue? value))
+            {
+                return value;
+            }
+
+            return text.ToValue<TValue>(xpath, provider);
+        }
+
+        [return: NotNullIfNotNull(nameof(defaultValue))]
+        private static TValue? ReadValueOrDefault<TValue>(this XmlNode node, string xpath, Func<string, int, TValue> baseConvert, TValue? defaultValue = default, IFormatProvider? provider = null) where TValue : IParsable<TValue>
+        {
+            XmlNode? child = node.SelectSingleNode(xpath);
+            if (child == null)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                var text = child.InnerText;
+                if (TryBaseConvert(text, baseConvert, out TValue? value))
+                {
+                    return value;
+                }
+
+                return text.ToValue<TValue>(xpath, provider);
+            }
+        }
+
+        private static TValue? ReadValueIfExists<TValue>(this XmlNode node, string xpath, Func<string, int, TValue> baseConvert, IFormatProvider? provider = null) where TValue : struct, IParsable<TValue>
+        {
+            string? text = node.SelectSingleNode(xpath)?.InnerText;
+            if (text != null)
+            {
+                if (TryBaseConvert(text, baseConvert, out TValue value))
+                {
+                    return value;
+                }
+            }
+
+            return text.ToValue<TValue>(xpath, provider);
+        }
+
         public static TValue ReadValue<TValue>(this XmlNode node, string xpath, IFormatProvider? provider = null) where TValue : IParsable<TValue>
-            => node.GetNodeOrThrow(xpath).InnerText.ToValue<TValue>(xpath, provider);
+            => node.GetNodeInnerTextOrThrow(xpath).ToValue<TValue>(xpath, provider);
 
         [return: NotNullIfNotNull(nameof(defaultValue))]
         public static TValue? ReadValueOrDefault<TValue>(this XmlNode node, string xpath, TValue? defaultValue = default, IFormatProvider? provider = null) where TValue : IParsable<TValue>
@@ -131,130 +203,130 @@ namespace YabberExtended.Extensions.Xml
         #region SByte
 
         public static sbyte ReadSByte(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<sbyte>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToSByte, provider);
 
         public static sbyte ReadSByteOrDefault(this XmlNode node, string xpath, sbyte defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToSByte, defaultValue, provider);
 
         public static sbyte? ReadSByteIfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<sbyte>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToSByte, provider);
 
         #endregion
 
         #region Byte
 
         public static byte ReadByte(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<byte>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToByte, provider);
 
         public static byte ReadByteOrDefault(this XmlNode node, string xpath, byte defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToByte, defaultValue, provider);
 
         public static byte? ReadByteIfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<byte>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToByte, provider);
 
         #endregion
 
         #region Int16
 
         public static short ReadInt16(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<short>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToInt16, provider);
 
         public static short ReadInt16OrDefault(this XmlNode node, string xpath, short defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToInt16, defaultValue, provider);
 
         public static short? ReadInt16IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<short>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToInt16, provider);
 
         #endregion
 
         #region UInt16
 
         public static ushort ReadUInt16(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<ushort>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToUInt16, provider);
 
         public static ushort ReadUInt16OrDefault(this XmlNode node, string xpath, ushort defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToUInt16, defaultValue, provider);
 
         public static ushort? ReadUInt16IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<ushort>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToUInt16, provider);
 
         #endregion
 
         #region Int32
 
         public static int ReadInt32(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<int>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToInt32, provider);
 
         public static int ReadInt32OrDefault(this XmlNode node, string xpath, int defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToInt32, defaultValue, provider);
 
         public static int? ReadInt32IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<int>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToInt32, provider);
 
         #endregion
 
         #region UInt32
 
         public static uint ReadUInt32(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<uint>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToUInt32, provider);
 
         public static uint ReadUInt32OrDefault(this XmlNode node, string xpath, uint defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToUInt32, defaultValue, provider);
 
         public static uint? ReadUInt32IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<uint>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToUInt32, provider);
 
         #endregion
 
         #region Int64
 
         public static long ReadInt64(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<long>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToInt64, provider);
 
         public static long ReadInt64OrDefault(this XmlNode node, string xpath, long defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToInt64, defaultValue, provider);
 
         public static long? ReadInt64IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<long>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToInt64, provider);
 
         #endregion
 
         #region UInt64
 
         public static ulong ReadUInt64(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<ulong>(xpath, provider);
+            => node.ReadValue(xpath, Convert.ToUInt64, provider);
 
         public static ulong ReadUInt64OrDefault(this XmlNode node, string xpath, ulong defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, Convert.ToUInt64, defaultValue, provider);
 
         public static ulong? ReadUInt64IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<ulong>(xpath, provider);
+            => node.ReadValueIfExists(xpath, Convert.ToUInt64, provider);
 
         #endregion
 
         #region Int128
 
         public static Int128 ReadInt128(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<Int128>(xpath, provider);
+            => node.ReadValue<Int128>(xpath, (string value, int baseValue) => Convert.ToInt64(value, baseValue), provider);
 
         public static Int128 ReadInt128OrDefault(this XmlNode node, string xpath, Int128 defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, (string value, int baseValue) => Convert.ToInt64(value, baseValue), defaultValue, provider);
 
         public static Int128? ReadInt128IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<Int128>(xpath, provider);
+            => node.ReadValueIfExists<Int128>(xpath, (string value, int baseValue) => Convert.ToInt64(value, baseValue), provider);
 
         #endregion
 
         #region UInt128
 
         public static UInt128 ReadUInt128(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValue<UInt128>(xpath, provider);
+            => node.ReadValue<UInt128>(xpath, (string value, int baseValue) => Convert.ToUInt64(value, baseValue), provider);
 
         public static UInt128 ReadUInt128OrDefault(this XmlNode node, string xpath, UInt128 defaultValue = default, IFormatProvider? provider = null)
-            => node.ReadValueOrDefault(xpath, defaultValue, provider);
+            => node.ReadValueOrDefault(xpath, (string value, int baseValue) => Convert.ToUInt64(value, baseValue), defaultValue, provider);
 
         public static UInt128? ReadUInt128IfExists(this XmlNode node, string xpath, IFormatProvider? provider = null)
-            => node.ReadValueIfExists<UInt128>(xpath, provider);
+            => node.ReadValueIfExists<UInt128>(xpath, (string value, int baseValue) => Convert.ToUInt64(value, baseValue), provider);
 
         #endregion
 

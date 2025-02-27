@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.8
+--| YabberExtended 1.1.9
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -178,3 +178,7 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.1.8
 	Added reuse offsets option to FMG repacking.
+
+1.1.9
+	Improved Zero3 unpack support.
+	Added Zero3 repack support.

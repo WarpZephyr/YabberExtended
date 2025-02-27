@@ -1,4 +1,8 @@
-﻿using SoulsFormats;
+﻿#if DEBUG
+//#define THROW_ON_ERROR
+#endif
+
+using SoulsFormats;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -34,8 +38,10 @@ namespace YabberExtended
 
             foreach (string path in args)
             {
+#if !THROW_ON_ERROR
                 try
                 {
+#endif
                     int maxProgress = Console.WindowWidth - 1;
                     int lastProgress = 0;
                     void report(float value)
@@ -77,6 +83,7 @@ namespace YabberExtended
                         progress.Report(1);
                         Console.WriteLine();
                     }
+#if !THROW_ON_ERROR
                 }
                 catch (DllNotFoundException ex) when (ex.Message.Contains("oo2core_6_win64.dll"))
                 {
@@ -106,6 +113,7 @@ namespace YabberExtended
                     Console.WriteLine($"Unhandled exception: {ex}");
                     pause = true;
                 }
+#endif
 
                 Console.WriteLine();
             }
@@ -181,7 +189,13 @@ namespace YabberExtended
             }
             else
             {
-                if (BND3.Is(sourceFile))
+                if (sourceFile.EndsWith(".000"))
+                {
+                    Console.WriteLine($"Unpacking 000: {filename}...");
+                    Zero3 z3 = Zero3.Read(sourceFile);
+                    z3.Unpack(filename, targetDir);
+                }
+                else if (BND3.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
                     using var bnd = new BND3Reader(sourceFile);
@@ -312,12 +326,6 @@ namespace YabberExtended
                     Console.WriteLine($"Converting MQB: {filename}...");
                     MQB mqb = MQB.Read(sourceFile);
                     mqb.Unpack(filename, sourceDir, progress);
-                }
-                else if (sourceFile.EndsWith(".000"))
-                {
-                    Console.WriteLine($"Unpacking 000: {filename}...");
-                    Zero3 z3 = Zero3.Read(sourceFile);
-                    z3.Unpack(targetDir);
                 }
                 else if (sourceFile.EndsWith(".ffx.xml") || sourceFile.EndsWith(".ffx.dcx.xml"))
                 {
@@ -482,6 +490,11 @@ namespace YabberExtended
             {
                 Console.WriteLine($"Repacking BXF4: {sourceName}...");
                 YBXF4.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists(Path.Combine(sourceDir, "_yabber-zero3.xml")))
+            {
+                Console.WriteLine($"Repacking 000: {sourceName}...");
+                YZero3.Repack(sourceDir, targetDir);
             }
             else if (File.Exists(Path.Combine(sourceDir, "_yabber-ldmu.xml")))
             {

@@ -81,3 +81,7 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.1.8
 * Added reuse offsets option to FMG repacking.
+
+### 1.1.9
+* Improved Zero3 unpack support.
+* Added Zero3 repack support.
