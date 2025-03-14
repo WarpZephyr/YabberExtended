@@ -88,3 +88,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.2.0
 * Fixed minor oversight in Zero3 repack.
+
+### 1.2.1
+* Fixed an issue in SoulsFormatsExtended for DCX EDGE compression.

@@ -1,5 +1,5 @@
 
---| YabberExtended 1.1.9
+--| YabberExtended 1.2.1
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -182,3 +182,9 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 1.1.9
 	Improved Zero3 unpack support.
 	Added Zero3 repack support.
+
+1.2.0
+	Fixed minor oversight in Zero3 repack.
+
+1.2.1
+	Fixed an issue in SoulsFormatsExtended for DCX EDGE compression.
