@@ -94,3 +94,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.2.2
 * Fixed oversight of not accounting for duplicate files in BND2.
+
+### 1.2.3
+* Minor bugfix to BND2 repack when files are nameless.

@@ -122,7 +122,7 @@ namespace YabberExtended
                 {
                     var attributes = fileNode.GetAttributesOrThrow();
                     int id = attributes.ReadInt32("id");
-                    string name = fileNode.ReadString("name");
+                    string name = fileNode.ReadStringOrDefault("name", string.Empty);
                     string suffix = fileNode.ReadStringOrDefault("suffix", string.Empty);
 
                     string inPath = string.Empty;
