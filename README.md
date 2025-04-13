@@ -91,3 +91,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.2.1
 * Fixed an issue in SoulsFormatsExtended for DCX EDGE compression.
+
+### 1.2.2
+* Fixed oversight of not accounting for duplicate files in BND2.

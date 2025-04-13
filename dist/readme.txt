@@ -1,5 +1,5 @@
 
---| YabberExtended 1.2.1
+--| YabberExtended 1.2.2
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -188,3 +188,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.2.1
 	Fixed an issue in SoulsFormatsExtended for DCX EDGE compression.
+
+1.2.2
+	Fixed oversight of not accounting for duplicate files in BND2.

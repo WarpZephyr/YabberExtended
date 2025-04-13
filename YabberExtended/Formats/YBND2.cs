@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using SoulsFormats;
@@ -28,16 +29,31 @@ namespace YabberExtended
             if (bnd.FilePathMode == BND2.FilePathModeEnum.BaseDirectory)
                 xw.WriteElementString("base_directory", bnd.BaseDirectory);
 
+            var pathCounts = new Dictionary<string, int>();
             xw.WriteStartElement("files");
             for (int i = 0; i < bnd.Files.Count; i++)
             {
                 var file = bnd.Files[i];
                 string strID = file.ID.ToString();
 
+                string suffix = string.Empty;
                 xw.WriteStartElement("file");
                 xw.WriteAttributeString("id", strID);
                 if (bnd.FilePathMode != BND2.FilePathModeEnum.Nameless && (bnd.FileInfoFlags & BND2.FileInfoFlagsEnum.NameOffset) != 0 && !string.IsNullOrEmpty(file.Name))
-                    xw.WriteString(file.Name);
+                {
+                    xw.WriteElementString("name", file.Name);
+                    if (pathCounts.TryGetValue(file.Name, out int value))
+                    {
+                        pathCounts[file.Name] = ++value;
+                        suffix = $" ({value})";
+                        xw.WriteElementString("suffix", suffix);
+                    }
+                    else
+                    {
+                        pathCounts[file.Name] = 1;
+                    }
+                }
+
                 xw.WriteEndElement();
 
                 string name = file.Name;
@@ -50,7 +66,20 @@ namespace YabberExtended
                     name = Path.Combine(RemoveRootFromPath(bnd.BaseDirectory), RemoveLeadingSlashes(name));
 
                 string outPath = Path.Combine(targetDir, RemoveRootFromPath(name));
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath));
+                string? outDir = Path.GetDirectoryName(outPath);
+                if (string.IsNullOrEmpty(outDir))
+                {
+                    throw new Exception($"Failed to get output folder name for output path: {outPath}");
+                }
+
+                if (!string.IsNullOrEmpty(suffix))
+                {
+                    string outName = Path.GetFileNameWithoutExtension(outPath);
+                    string outExtension = Path.GetExtension(outPath);
+                    outPath = $"{Path.Combine(outDir, outName)}{suffix}{outExtension}";
+                }
+
+                Directory.CreateDirectory(outDir);
                 File.WriteAllBytes(outPath, bnd.ReadFile(file));
                 progress.Report((float)i / bnd.Files.Count);
             }
@@ -93,7 +122,8 @@ namespace YabberExtended
                 {
                     var attributes = fileNode.GetAttributesOrThrow();
                     int id = attributes.ReadInt32("id");
-                    string name = fileNode?.InnerText ?? string.Empty;
+                    string name = fileNode.ReadString("name");
+                    string suffix = fileNode.ReadStringOrDefault("suffix", string.Empty);
 
                     string inPath = string.Empty;
                     if ((bnd.FileInfoFlags & BND2.FileInfoFlagsEnum.NameOffset) != 0)
@@ -104,7 +134,7 @@ namespace YabberExtended
                                 inPath = Path.Combine(sourceDir, id.ToString());
                                 break;
                             case BND2.FilePathModeEnum.FileName:
-                                inPath = Path.Combine(sourceDir, Path.GetDirectoryName(name), $"{Path.GetFileNameWithoutExtension(name)}{Path.GetExtension(name)}");
+                                inPath = Path.Combine(sourceDir, name);
                                 break;
                             case BND2.FilePathModeEnum.FullPath:
                                 inPath = Path.Combine(sourceDir, RemoveRootFromPath(name));
@@ -114,6 +144,19 @@ namespace YabberExtended
                                 break;
                             default:
                                 throw new FriendlyException($"{filePathMode} is not a valid file path mode.");
+                        }
+
+                        if (!string.IsNullOrEmpty(suffix))
+                        {
+                            string? inDir = Path.GetDirectoryName(inPath);
+                            if (string.IsNullOrEmpty(inDir))
+                            {
+                                throw new Exception($"Failed to get input folder name for input path: {inPath}");
+                            }
+
+                            string inName = Path.GetFileNameWithoutExtension(inPath);
+                            string inExtension = Path.GetExtension(inPath);
+                            inPath = $"{Path.Combine(inDir, inName)}{suffix}{inExtension}";
                         }
                     }
                     else
