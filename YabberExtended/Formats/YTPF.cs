@@ -17,7 +17,7 @@ namespace YabberExtended
             xw.WriteStartElement("tpf");
 
             xw.WriteElementString("filename", sourceName);
-            xw.WriteElementString("compression", tpf.Compression.ToString());
+            DcxHelper.WriteCompressionInfo(xw, tpf.Compression);
             xw.WriteElementString("platform", tpf.Platform.ToString());
             xw.WriteElementString("encoding", $"0x{tpf.Encoding:X2}");
             xw.WriteElementString("flag2", $"0x{tpf.Flag2:X2}");
@@ -78,8 +78,7 @@ namespace YabberExtended
             xml.Load($"{sourceDir}\\_yabber-tpf.xml");
 
             string filename = xml.SelectSingleNode("tpf/filename").InnerText;
-            string compressionText = xml.SelectSingleNode("tpf/compression")?.InnerText ?? "None";
-            tpf.Compression = DcxHelper.BuildCompressionInfo(compressionText);
+            tpf.Compression = DcxHelper.ReadCompressionInfo(xml.SelectSingleNode("tpf"));
             Enum.TryParse(xml.SelectSingleNode("tpf/platform")?.InnerText ?? "None", out TPF.TPFPlatform platform);
             tpf.Platform = platform;
             tpf.Encoding = Convert.ToByte(xml.SelectSingleNode("tpf/encoding").InnerText, 16);

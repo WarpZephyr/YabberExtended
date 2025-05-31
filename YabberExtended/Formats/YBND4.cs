@@ -17,7 +17,7 @@ namespace YabberExtended
             xw.WriteStartElement("bnd4");
 
             xw.WriteElementString("filename", sourceName);
-            xw.WriteElementString("compression", bnd.Compression.ToString());
+            DcxHelper.WriteCompressionInfo(xw, bnd.Compression);
             xw.WriteElementString("version", bnd.Version);
             xw.WriteElementString("format", bnd.Format.ToString());
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
@@ -38,8 +38,7 @@ namespace YabberExtended
             xml.Load($"{sourceDir}\\_yabber-bnd4.xml");
 
             string filename = xml.SelectSingleNode("bnd4/filename").InnerText;
-            string compressionText = xml.SelectSingleNode("bnd4/compression")?.InnerText ?? "None";
-            bnd.Compression = DcxHelper.BuildCompressionInfo(compressionText);
+            bnd.Compression = DcxHelper.ReadCompressionInfo(xml.SelectSingleNode("bnd4"));
             bnd.Version = xml.SelectSingleNode("bnd4/version").InnerText;
             bnd.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bnd4/format").InnerText);
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd4/bigendian").InnerText);

@@ -56,7 +56,9 @@ namespace YabberExtended
                 }
 
                 if (file.Compression.Type != DCX.Type.Zlib)
-                    xw.WriteElementString("compression_type", file.Compression.Type.ToString());
+                {
+                    DcxHelper.WriteCompressionInfo(xw, file.Compression, "compression_type");
+                }
 
                 xw.WriteEndElement();
 
@@ -81,7 +83,6 @@ namespace YabberExtended
                 string root = fileNode.SelectSingleNode("root")?.InnerText ?? "";
                 string path = fileNode.SelectSingleNode("path").InnerText;
                 string suffix = fileNode.SelectSingleNode("suffix")?.InnerText ?? "";
-                string strCompression = fileNode.SelectSingleNode("compression_type")?.InnerText ?? DCX.Type.Zlib.ToString();
                 string name = root + path;
 
                 if (!Enum.TryParse(strFlags, out Binder.FileFlags flags))
@@ -90,16 +91,13 @@ namespace YabberExtended
                 if (!int.TryParse(strID, out int id))
                     throw new FriendlyException($"Could not parse file ID: {strID}\nID must be a 32-bit signed integer.");
 
-                if (!Enum.TryParse(strCompression, out DCX.Type compressionType))
-                    throw new FriendlyException($"Could not parse compression type: {strCompression}\nCompression type must be a valid DCX Type.");
-
                 string inPath = $@"{sourceDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
                 FriendlyException.ThrowIfNotFile(inPath);
 
                 byte[] bytes = File.ReadAllBytes(inPath);
                 bnd.Files.Add(new BinderFile(flags, id, name, bytes)
                 {
-                    CompressionInfo = DcxHelper.BuildCompressionInfo(strCompression)
+                    CompressionInfo = DcxHelper.ReadCompressionInfo(fileNode, "compression_type", DCX.Type.Zlib.ToString())
                 });
             }
         }

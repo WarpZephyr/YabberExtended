@@ -18,7 +18,7 @@ namespace YabberExtended
             XmlWriter xw = XmlWriter.Create($"{sourceFile}.xml", xws);
 
             xw.WriteStartElement("gparam");
-            xw.WriteElementString("compression", gparam.Compression.ToString());
+            DcxHelper.WriteCompressionInfo(xw, gparam.Compression);
             xw.WriteElementString("game", gparam.Game.ToString());
             xw.WriteElementString("unk0D", gparam.Unk0D.ToString());
             xw.WriteElementString("unk14", gparam.Unk14.ToString());
@@ -113,8 +113,7 @@ namespace YabberExtended
             var gparam = new GPARAM();
             var xml = new XmlDocument();
             xml.Load(sourceFile);
-            string compressionText = xml.SelectSingleNode("gparam/compression")?.InnerText ?? "None";
-            gparam.Compression = DcxHelper.BuildCompressionInfo(compressionText);
+            gparam.Compression = DcxHelper.ReadCompressionInfo(xml.SelectSingleNode("gparam"));
             Enum.TryParse(xml.SelectSingleNode("gparam/game").InnerText, out gparam.Game);
             gparam.Unk0D = bool.Parse(xml.SelectSingleNode("gparam/unk0D").InnerText);
             gparam.Unk14 = int.Parse(xml.SelectSingleNode("gparam/unk14").InnerText);

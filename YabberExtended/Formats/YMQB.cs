@@ -25,7 +25,7 @@ namespace YabberExtended
             xw.WriteElementString("Filename", filename);
             xw.WriteElementString("Framerate", mqb.Framerate.ToString());
             xw.WriteElementString("BigEndian", mqb.BigEndian.ToString());
-            xw.WriteElementString("Compression", mqb.Compression.ToString());
+            DcxHelper.WriteCompressionInfo(xw, mqb.Compression, "Compression");
             xw.WriteElementString("ResourceDirectory", mqb.ResourceDirectory);
             xw.WriteStartElement("Resources");
             foreach (var resource in mqb.Resources)
@@ -198,7 +198,6 @@ namespace YabberExtended
             var version = FriendlyParseEnum<MQB.MQBVersion>(nameof(MQB), nameof(MQB.Version), xml.SelectSingleNode("MQB/Version").InnerText);
             float framerate = FriendlyParseFloat32(nameof(MQB), nameof(MQB.Framerate), xml.SelectSingleNode("MQB/Framerate").InnerText);
             bool bigendian = FriendlyParseBool(nameof(MQB), nameof(MQB.BigEndian), xml.SelectSingleNode("MQB/BigEndian").InnerText);
-            string compressionText = xml.SelectSingleNode("MQB/Compression")?.InnerText ?? "None";
 
             string resDir = xml.SelectSingleNode("MQB/ResourceDirectory").InnerText;
             List<MQB.Resource> resources = new List<MQB.Resource>();
@@ -216,7 +215,7 @@ namespace YabberExtended
             mqb.Version = version;
             mqb.Framerate = framerate;
             mqb.BigEndian = bigendian;
-            mqb.Compression = DcxHelper.BuildCompressionInfo(compressionText);
+            mqb.Compression = DcxHelper.ReadCompressionInfo(xml.SelectSingleNode("MQB"), "Compression");
             mqb.ResourceDirectory = resDir;
             mqb.Resources = resources;
             mqb.Cuts = cuts;

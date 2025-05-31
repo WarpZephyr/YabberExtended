@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using ZstdNet;
 
 namespace YabberExtended
 {
@@ -93,15 +94,74 @@ namespace YabberExtended
             XmlWriter xw = XmlWriter.Create($"{outPath}-yabber-dcx.xml", xws);
 
             xw.WriteStartElement("dcx");
-            xw.WriteElementString("compression", compression.Type.ToString());
+            WriteCompressionInfo(xw, compression);
             xw.WriteEndElement();
             xw.Close();
 
             return false;
         }
 
-        private static DCX.CompressionInfo BuildCompressionInfo(string compressionText)
+        private static bool Compress(string path)
         {
+            string xmlPath = $"{path}-yabber-dcx.xml";
+            if (!File.Exists(xmlPath))
+            {
+                Console.WriteLine($"XML file not found: {xmlPath}");
+                return true;
+            }
+
+            Console.WriteLine($"Compressing file: {Path.GetFileName(path)}...");
+            XmlDocument xml = new XmlDocument();
+            xml.Load(xmlPath);
+
+            var compressionInfo = ReadCompressionInfo(xml.SelectSingleNode("dcx"));
+
+            string outPath;
+            if (path.EndsWith(".undcx"))
+                outPath = path.Substring(0, path.Length - 6);
+            else
+                outPath = path + ".dcx";
+
+            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
+                File.Move(outPath, outPath + ".bak");
+
+            DCX.Compress(File.ReadAllBytes(path), compressionInfo, outPath);
+
+            return false;
+        }
+
+        private static void WriteCompressionInfo(XmlWriter xw, DCX.CompressionInfo compression)
+        {
+            xw.WriteElementString("compression", compression.Type.ToString());
+            switch (compression.Type)
+            {
+                case DCX.Type.DCX_DFLT:
+                    if (compression is DCX.DcxDfltCompressionInfo dflt)
+                    {
+                        xw.WriteElementString("compression_dflt_unk04", dflt.Unk04.ToString());
+                        xw.WriteElementString("compression_dflt_unk10", dflt.Unk10.ToString());
+                        xw.WriteElementString("compression_dflt_unk14", dflt.Unk14.ToString());
+                        xw.WriteElementString("compression_dflt_unk30", dflt.Unk30.ToString());
+                        xw.WriteElementString("compression_dflt_unk38", dflt.Unk38.ToString());
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"{nameof(DCX.Type)} is {DCX.Type.DCX_DFLT} yet {nameof(DCX.CompressionInfo)} is not {nameof(DCX.DcxDfltCompressionInfo)}.");
+                    }
+                    break;
+                case DCX.Type.DCX_KRAK:
+                    if (compression is DCX.DcxKrakCompressionInfo krak)
+                        xw.WriteElementString("compression_krak_compressionlevel", krak.CompressionLevel.ToString());
+                    else
+                        throw new NotSupportedException($"{nameof(DCX.Type)} is {DCX.Type.DCX_KRAK} yet {nameof(DCX.CompressionInfo)} is not {nameof(DCX.DcxKrakCompressionInfo)}.");
+                    break;
+            }
+        }
+
+        private static DCX.CompressionInfo ReadCompressionInfo(XmlNode? node)
+        {
+            string compressionText = node?.SelectSingleNode("compression")?.InnerText ?? "None";
+
             DCX.CompressionInfo compressionInfo;
             DCX.Type compression;
             switch (compressionText)
@@ -145,51 +205,27 @@ namespace YabberExtended
                             compressionInfo = new DCX.DcxEdgeCompressionInfo();
                             break;
                         case DCX.Type.DCX_DFLT:
-                            compressionInfo = new DCX.DcxDfltCompressionInfo();
+                            _ = int.TryParse(node?.SelectSingleNode("compression_dflt_unk04")?.InnerText ?? "0", out int unk04);
+                            _ = int.TryParse(node?.SelectSingleNode("compression_dflt_unk10")?.InnerText ?? "0", out int unk10);
+                            _ = int.TryParse(node?.SelectSingleNode("compression_dflt_unk14")?.InnerText ?? "0", out int unk14);
+                            _ = byte.TryParse(node?.SelectSingleNode("compression_dflt_unk30")?.InnerText ?? "0", out byte unk30);
+                            _ = byte.TryParse(node?.SelectSingleNode("compression_dflt_unk38")?.InnerText ?? "0", out byte unk38);
+                            compressionInfo = new DCX.DcxDfltCompressionInfo(unk04, unk10, unk14, unk30, unk38);
                             break;
                         case DCX.Type.DCX_KRAK:
-                            compressionInfo = new DCX.DcxKrakCompressionInfo();
+                            _ = byte.TryParse(node?.SelectSingleNode("compression_krak_compressionlevel")?.InnerText ?? "0", out byte compressionLevel);
+                            compressionInfo = new DCX.DcxKrakCompressionInfo(compressionLevel);
                             break;
                         case DCX.Type.DCX_ZSTD:
                             compressionInfo = new DCX.DcxZstdCompressionInfo();
                             break;
                         default:
-                            throw new NotSupportedException($"{nameof(DCX.Type)} {compression} is not supported for: {nameof(BuildCompressionInfo)}");
+                            throw new NotSupportedException($"{nameof(DCX.Type)} {compression} is not supported for: {nameof(ReadCompressionInfo)}");
                     }
                     break;
             }
 
             return compressionInfo;
-        }
-
-        private static bool Compress(string path)
-        {
-            string xmlPath = $"{path}-yabber-dcx.xml";
-            if (!File.Exists(xmlPath))
-            {
-                Console.WriteLine($"XML file not found: {xmlPath}");
-                return true;
-            }
-
-            Console.WriteLine($"Compressing file: {Path.GetFileName(path)}...");
-            XmlDocument xml = new XmlDocument();
-            xml.Load(xmlPath);
-
-            string compressionText = xml.SelectSingleNode("dcx/compression").InnerText;
-            var compressionInfo = BuildCompressionInfo(compressionText);
-
-            string outPath;
-            if (path.EndsWith(".undcx"))
-                outPath = path.Substring(0, path.Length - 6);
-            else
-                outPath = path + ".dcx";
-
-            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                File.Move(outPath, outPath + ".bak");
-
-            DCX.Compress(File.ReadAllBytes(path), compressionInfo, outPath);
-
-            return false;
         }
     }
 }

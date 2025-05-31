@@ -17,7 +17,7 @@ namespace YabberExtended
             xw.WriteStartElement("bnd3");
 
             xw.WriteElementString("filename", sourceName);
-            xw.WriteElementString("compression", bnd.Compression.ToString());
+            DcxHelper.WriteCompressionInfo(xw, bnd.Compression);
             xw.WriteElementString("version", bnd.Version);
             xw.WriteElementString("format", bnd.Format.ToString());
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
@@ -40,7 +40,6 @@ namespace YabberExtended
                 throw new FriendlyException("Missing filename tag.");
 
             string filename = xml.SelectSingleNode("bnd3/filename").InnerText;
-            string strCompression = xml.SelectSingleNode("bnd3/compression")?.InnerText ?? "None";
             bnd.Version = xml.SelectSingleNode("bnd3/version")?.InnerText ?? "07D7R6";
             string strFormat = xml.SelectSingleNode("bnd3/format")?.InnerText ?? "IDs, Names1, Names2, Compression";
             string strBigEndian = xml.SelectSingleNode("bnd3/bigendian")?.InnerText ?? "False";
@@ -48,7 +47,7 @@ namespace YabberExtended
             string strUnk18 = xml.SelectSingleNode("bnd3/unk18")?.InnerText ?? "0x0";
             string strWriteFileHeadersEnd = xml.SelectSingleNode("bnd3/writefileheadersend")?.InnerText ?? "True";
 
-            bnd.Compression = DcxHelper.BuildCompressionInfo(strCompression);
+            bnd.Compression = DcxHelper.ReadCompressionInfo(xml.SelectSingleNode("bnd3"));
 
             try
             {
