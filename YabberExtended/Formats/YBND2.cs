@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SoulsFormats;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SoulsFormats;
 using YabberExtended.Extensions.Xml;
 using static YabberExtended.YabberUtil;
 
@@ -163,7 +163,7 @@ namespace YabberExtended
                     {
                         inPath = Path.Combine(sourceDir, id.ToString());
                     }
-                    
+
                     if (!File.Exists(inPath))
                         throw new FriendlyException($"File not found: {inPath}");
 

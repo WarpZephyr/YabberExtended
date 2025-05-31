@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -54,8 +55,8 @@ namespace YabberExtended
                     pathCounts[path] = 1;
                 }
 
-                if (file.CompressionType != DCX.Type.Zlib)
-                    xw.WriteElementString("compression_type", file.CompressionType.ToString());
+                if (file.Compression.Type != DCX.Type.Zlib)
+                    xw.WriteElementString("compression_type", file.Compression.Type.ToString());
 
                 xw.WriteEndElement();
 
@@ -98,7 +99,7 @@ namespace YabberExtended
                 byte[] bytes = File.ReadAllBytes(inPath);
                 bnd.Files.Add(new BinderFile(flags, id, name, bytes)
                 {
-                    CompressionType = compressionType
+                    CompressionInfo = DcxHelper.BuildCompressionInfo(strCompression)
                 });
             }
         }

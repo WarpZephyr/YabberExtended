@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SoulsFormats.Other;
+using System;
 using System.IO;
 using System.Xml;
-using SoulsFormats;
 using YabberExtended.Extensions.Xml;
 using static YabberExtended.YabberUtil;
 

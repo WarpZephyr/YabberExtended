@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SoulsFormats.Other.Kuon;
+using System;
 using System.IO;
 using System.Xml;
-using SoulsFormats.Kuon;
 using YabberExtended.Extensions.Xml;
 using static YabberExtended.YabberUtil;
 

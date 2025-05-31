@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -77,8 +78,8 @@ namespace YabberExtended
             xml.Load($"{sourceDir}\\_yabber-tpf.xml");
 
             string filename = xml.SelectSingleNode("tpf/filename").InnerText;
-            Enum.TryParse(xml.SelectSingleNode("tpf/compression")?.InnerText ?? "None", out DCX.Type compression);
-            tpf.Compression = compression;
+            string compressionText = xml.SelectSingleNode("tpf/compression")?.InnerText ?? "None";
+            tpf.Compression = DcxHelper.BuildCompressionInfo(compressionText);
             Enum.TryParse(xml.SelectSingleNode("tpf/platform")?.InnerText ?? "None", out TPF.TPFPlatform platform);
             tpf.Platform = platform;
             tpf.Encoding = Convert.ToByte(xml.SelectSingleNode("tpf/encoding").InnerText, 16);
@@ -127,7 +128,7 @@ namespace YabberExtended
                 }
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{name}.dds");
-                var texture = new TPF.Texture(name, format, flags1, bytes);
+                var texture = new TPF.Texture(name, format, flags1, bytes, tpf.Platform);
 
                 if (tpf.Platform != TPF.TPFPlatform.PC)
                 {
@@ -148,7 +149,7 @@ namespace YabberExtended
                         texture.Header.Unk2 = unk2;
                     }
 
-                    texture.Bytes = texture.Deheaderize();
+                    //texture.Bytes = texture.Deheaderize();
                 }
 
                 texture.FloatStruct = floatStruct;

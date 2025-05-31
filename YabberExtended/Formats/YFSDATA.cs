@@ -59,7 +59,7 @@ namespace YabberExtended
                     var file = new FSDATA.File();
                     string strID = fileNode.GetNodeOrThrow("id").InnerText;
                     int id = strID.ToInt32("id");
-                    
+
                     string inPath = fileNode.GetFilePathNameOrUseID(sourceDir, strID);
                     FriendlyException.ThrowIfNotFile(inPath);
 

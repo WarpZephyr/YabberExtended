@@ -1237,4 +1237,4 @@ namespace YabberExtended
 
         #endregion
     }
-    }
+}

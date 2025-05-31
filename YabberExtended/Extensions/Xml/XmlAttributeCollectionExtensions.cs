@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml;
-using System;
 using YabberExtended.Extensions.Value;
 
 namespace YabberExtended.Extensions.Xml

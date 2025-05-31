@@ -1,4 +1,4 @@
-﻿using SoulsFormats;
+﻿using SoulsFormats.Other;
 using System;
 using System.IO;
 using System.Xml;

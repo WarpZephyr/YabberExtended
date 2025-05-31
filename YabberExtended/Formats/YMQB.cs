@@ -1,13 +1,13 @@
 ﻿using SoulsFormats;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -198,8 +198,7 @@ namespace YabberExtended
             var version = FriendlyParseEnum<MQB.MQBVersion>(nameof(MQB), nameof(MQB.Version), xml.SelectSingleNode("MQB/Version").InnerText);
             float framerate = FriendlyParseFloat32(nameof(MQB), nameof(MQB.Framerate), xml.SelectSingleNode("MQB/Framerate").InnerText);
             bool bigendian = FriendlyParseBool(nameof(MQB), nameof(MQB.BigEndian), xml.SelectSingleNode("MQB/BigEndian").InnerText);
-            if (!Enum.TryParse(xml.SelectSingleNode("MQB/Compression")?.InnerText ?? "None", out DCX.Type compression))
-                throw new FriendlyException($"{nameof(MQB)} {nameof(MQB.Compression)} could not be parsed.");
+            string compressionText = xml.SelectSingleNode("MQB/Compression")?.InnerText ?? "None";
 
             string resDir = xml.SelectSingleNode("MQB/ResourceDirectory").InnerText;
             List<MQB.Resource> resources = new List<MQB.Resource>();
@@ -217,7 +216,7 @@ namespace YabberExtended
             mqb.Version = version;
             mqb.Framerate = framerate;
             mqb.BigEndian = bigendian;
-            mqb.Compression = compression;
+            mqb.Compression = DcxHelper.BuildCompressionInfo(compressionText);
             mqb.ResourceDirectory = resDir;
             mqb.Resources = resources;
             mqb.Cuts = cuts;

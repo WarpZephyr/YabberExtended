@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -47,9 +48,7 @@ namespace YabberExtended
             string strUnk18 = xml.SelectSingleNode("bnd3/unk18")?.InnerText ?? "0x0";
             string strWriteFileHeadersEnd = xml.SelectSingleNode("bnd3/writefileheadersend")?.InnerText ?? "True";
 
-            if (!Enum.TryParse(strCompression, out DCX.Type compression))
-                throw new FriendlyException($"Could not parse compression type: {strCompression}");
-            bnd.Compression = compression;
+            bnd.Compression = DcxHelper.BuildCompressionInfo(strCompression);
 
             try
             {

@@ -1,4 +1,4 @@
-﻿using SoulsFormats;
+﻿using SoulsFormats.Other.AC4;
 using System;
 using System.IO;
 using System.Xml;

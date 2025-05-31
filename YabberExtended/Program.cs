@@ -3,6 +3,9 @@
 #endif
 
 using SoulsFormats;
+using SoulsFormats.Other;
+using SoulsFormats.Other.AC4;
+using SoulsFormats.Other.Murakumo;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -138,7 +141,7 @@ namespace YabberExtended
             if (DCX.Is(sourceFile))
             {
                 Console.WriteLine($"Decompressing DCX: {filename}...");
-                byte[] bytes = DCX.Decompress(sourceFile, out DCX.Type compression);
+                byte[] bytes = DCX.Decompress(sourceFile, out DCX.CompressionInfo compression);
                 if (BND3.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
@@ -213,17 +216,17 @@ namespace YabberExtended
                     using var bnd = new BND2Reader(sourceFile);
                     bnd.Unpack(filename, targetDir, progress);
                 }
-                else if (SoulsFormats.AC3SL.BND.Is(sourceFile))
+                else if (SoulsFormats.Other.AC3SL.BND.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking AC3SL BND: {filename}...");
-                    var bnd = SoulsFormats.AC3SL.BND.Read(sourceFile);
+                    var bnd = SoulsFormats.Other.AC3SL.BND.Read(sourceFile);
                     bnd.Unpack(filename, targetDir, progress);
                 }
-                else if (SoulsFormats.Kuon.DVDBND.Is(sourceFile))
+                else if (SoulsFormats.Other.Kuon.DVDBND.Is(sourceFile))
                 {
                     try
                     {
-                        var dvdBndKuon = SoulsFormats.Kuon.DVDBND.Read(sourceFile);
+                        var dvdBndKuon = SoulsFormats.Other.Kuon.DVDBND.Read(sourceFile);
                         Console.WriteLine($"Unpacking Kuon DVDBND: {filename}...");
                         dvdBndKuon.Unpack(filename, targetDir, progress);
                     }
@@ -231,7 +234,7 @@ namespace YabberExtended
                     {
                         try
                         {
-                            var bndKuon = SoulsFormats.Kuon.BND.Read(sourceFile);
+                            var bndKuon = SoulsFormats.Other.Kuon.BND.Read(sourceFile);
                             Console.WriteLine($"Unpacking Kuon BND: {filename}...");
                             bndKuon.Unpack(filename, targetDir, progress);
                         }
@@ -239,7 +242,7 @@ namespace YabberExtended
                         {
                             try
                             {
-                                var bndACE3 = SoulsFormats.ACE3.BND.Read(sourceFile);
+                                var bndACE3 = SoulsFormats.Other.ACE3.BND.Read(sourceFile);
                                 Console.WriteLine($"Unpacking ACE3 BND: {filename}...");
                                 bndACE3.Unpack(filename, targetDir, progress);
                             }

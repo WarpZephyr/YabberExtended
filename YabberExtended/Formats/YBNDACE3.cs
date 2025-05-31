@@ -1,8 +1,7 @@
-﻿using System;
-using System.Globalization;
+﻿using SoulsFormats.Other.ACE3;
+using System;
 using System.IO;
 using System.Xml;
-using SoulsFormats.ACE3;
 using YabberExtended.Extensions;
 using YabberExtended.Extensions.Value;
 using YabberExtended.Extensions.Xml;

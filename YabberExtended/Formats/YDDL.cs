@@ -1,4 +1,4 @@
-﻿using SoulsFormats;
+﻿using SoulsFormats.Other.Murakumo;
 using System.IO;
 using System.Xml;
 

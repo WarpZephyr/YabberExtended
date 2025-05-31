@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SoulsFormats.Other.AC3SL;
+using System;
 using System.IO;
 using System.Xml;
-using SoulsFormats.AC3SL;
 using YabberExtended.Extensions;
 using YabberExtended.Extensions.Value;
 using YabberExtended.Extensions.Xml;

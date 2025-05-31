@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -37,8 +38,8 @@ namespace YabberExtended
             xml.Load($"{sourceDir}\\_yabber-bnd4.xml");
 
             string filename = xml.SelectSingleNode("bnd4/filename").InnerText;
-            Enum.TryParse(xml.SelectSingleNode("bnd4/compression")?.InnerText ?? "None", out DCX.Type compression);
-            bnd.Compression = compression;
+            string compressionText = xml.SelectSingleNode("bnd4/compression")?.InnerText ?? "None";
+            bnd.Compression = DcxHelper.BuildCompressionInfo(compressionText);
             bnd.Version = xml.SelectSingleNode("bnd4/version").InnerText;
             bnd.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bnd4/format").InnerText);
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd4/bigendian").InnerText);

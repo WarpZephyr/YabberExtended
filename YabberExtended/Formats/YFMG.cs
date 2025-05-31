@@ -2,6 +2,7 @@
 using System;
 using System.Xml;
 using YabberExtended.Extensions.Xml;
+using YabberExtended.Helpers;
 
 namespace YabberExtended
 {
@@ -43,8 +44,8 @@ namespace YabberExtended
             FMG fmg = new FMG();
             XmlDocument xml = new XmlDocument();
             xml.Load(sourceFile);
-            Enum.TryParse(xml.SelectSingleNode("fmg/compression")?.InnerText ?? "None", out DCX.Type compression);
-            fmg.Compression = compression;
+            string compressionText = xml.SelectSingleNode("fmg/compression")?.InnerText ?? "None";
+            fmg.Compression = DcxHelper.BuildCompressionInfo(compressionText);
             fmg.Version = (FMG.FMGVersion)Enum.Parse(typeof(FMG.FMGVersion), xml.SelectSingleNode("fmg/version").InnerText);
             fmg.BigEndian = bool.Parse(xml.SelectSingleNode("fmg/bigendian").InnerText);
 
