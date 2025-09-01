@@ -47,7 +47,7 @@ namespace YabberExtended
             bnd.Extended = Convert.ToByte(xml.SelectSingleNode("bnd4/extended").InnerText, 16);
             bnd.Unk04 = bool.Parse(xml.SelectSingleNode("bnd4/unk04").InnerText);
             bnd.Unk05 = bool.Parse(xml.SelectSingleNode("bnd4/unk05").InnerText);
-            XmlNodeList? fileNodes = xml.SelectNodes("bnd3/files/file");
+            XmlNodeList? fileNodes = xml.SelectNodes("bnd4/files/file");
             if (fileNodes != null)
                 YBinder.ReadBinderFiles(bnd, fileNodes, sourceDir);
 

@@ -48,54 +48,54 @@ namespace YabberExtended
             xw.WriteElementString("Path", $"{resource.Path}");
             xw.WriteElementString("ParentIndex", $"{resource.ParentIndex}");
             xw.WriteElementString("Unk48", $"{resource.Unk48}");
-            xw.WriteStartElement("Resource_CustomData");
-            foreach (var customdata in resource.CustomData)
-                UnpackCustomData(xw, customdata);
+            xw.WriteStartElement("Resource_Parameter");
+            foreach (var parameter in resource.Parameters)
+                UnpackParameter(xw, parameter);
             xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
-        public static void UnpackCustomData(XmlWriter xw, MQB.CustomData customdata)
+        public static void UnpackParameter(XmlWriter xw, MQB.Parameter parameter)
         {
-            xw.WriteStartElement($"CustomData");
-            xw.WriteElementString("Name", $"{customdata.Name}");
-            xw.WriteElementString("Type", $"{customdata.Type}");
+            xw.WriteStartElement($"Parameter");
+            xw.WriteElementString("Name", $"{parameter.Name}");
+            xw.WriteElementString("Type", $"{parameter.Type}");
 
-            switch (customdata.Type)
+            switch (parameter.Type)
             {
-                case MQB.CustomData.DataType.Vector:
-                    switch (customdata.MemberCount)
+                case MQB.Parameter.DataType.Vector:
+                    switch (parameter.MemberCount)
                     {
                         case 2:
-                            xw.WriteElementString("Value", ((Vector2)customdata.Value).Vector2ToString());
+                            xw.WriteElementString("Value", ((Vector2)parameter.Value).Vector2ToString());
                             break;
                         case 3:
-                            xw.WriteElementString("Value", ((Vector3)customdata.Value).Vector3ToString());
+                            xw.WriteElementString("Value", ((Vector3)parameter.Value).Vector3ToString());
                             break;
                         case 4:
-                            xw.WriteElementString("Value", ((Vector4)customdata.Value).Vector4ToString());
+                            xw.WriteElementString("Value", ((Vector4)parameter.Value).Vector4ToString());
                             break;
                         default:
-                            throw new NotImplementedException($"{nameof(MQB.CustomData.MemberCount)} {customdata.MemberCount} not implemented for: {nameof(MQB.CustomData.DataType.Vector)}");
+                            throw new NotImplementedException($"{nameof(MQB.Parameter.MemberCount)} {parameter.MemberCount} not implemented for: {nameof(MQB.Parameter.DataType.Vector)}");
                     }
                     break;
-                case MQB.CustomData.DataType.Custom:
-                    xw.WriteElementString("Value", ((byte[])customdata.Value).ToHexString());
+                case MQB.Parameter.DataType.Custom:
+                    xw.WriteElementString("Value", ((byte[])parameter.Value).ToHexString());
                     break;
                 default:
-                    xw.WriteElementString("Value", $"{customdata.Value}");
+                    xw.WriteElementString("Value", $"{parameter.Value}");
                     break;
             }
 
-            xw.WriteElementString("MemberCount", $"{customdata.MemberCount}");
+            xw.WriteElementString("MemberCount", $"{parameter.MemberCount}");
             xw.WriteStartElement("Sequences");
-            foreach (var sequence in customdata.Sequences)
+            foreach (var sequence in parameter.Sequences)
                 UnpackSequence(xw, sequence);
             xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
-        public static void UnpackSequence(XmlWriter xw, MQB.CustomData.Sequence sequence)
+        public static void UnpackSequence(XmlWriter xw, MQB.Parameter.Sequence sequence)
         {
             xw.WriteStartElement($"Sequence");
             xw.WriteElementString("ValueIndex", $"{sequence.ValueIndex}");
@@ -108,7 +108,7 @@ namespace YabberExtended
             xw.WriteEndElement();
         }
 
-        public static void UnpackPoint(XmlWriter xw, MQB.CustomData.Sequence.Point point)
+        public static void UnpackPoint(XmlWriter xw, MQB.Parameter.Sequence.Point point)
         {
             xw.WriteStartElement($"Point");
             xw.WriteElementString("Value", $"{point.Value}");
@@ -135,37 +135,37 @@ namespace YabberExtended
         {
             xw.WriteStartElement($"Timeline");
             xw.WriteElementString("Unk10", $"{timeline.Unk10}");
-            xw.WriteStartElement($"Dispositions");
-            foreach (var disposition in timeline.Dispositions)
-                UnpackDisposition(xw, disposition);
+            xw.WriteStartElement($"Events");
+            foreach (var @event in timeline.Events)
+                UnpackEvent(xw, @event);
             xw.WriteEndElement();
-            xw.WriteStartElement($"Timeline_CustomData");
-            foreach (var customdata in timeline.CustomData)
-                UnpackCustomData(xw, customdata);
+            xw.WriteStartElement($"Timeline_Parameter");
+            foreach (var parameter in timeline.Parameters)
+                UnpackParameter(xw, parameter);
             xw.WriteEndElement();
             xw.WriteEndElement();
         }
 
-        public static void UnpackDisposition(XmlWriter xw, MQB.Disposition disposition)
+        public static void UnpackEvent(XmlWriter xw, MQB.Event @event)
         {
-            xw.WriteStartElement($"Disposition");
-            xw.WriteElementString("ID", $"{disposition.ID}");
-            xw.WriteElementString("Duration", $"{disposition.Duration}");
-            xw.WriteElementString("ResourceIndex", $"{disposition.ResourceIndex}");
-            xw.WriteElementString("StartFrame", $"{disposition.StartFrame}");
-            xw.WriteElementString("Unk08", $"{disposition.Unk08}");
-            xw.WriteElementString("Unk14", $"{disposition.Unk14}");
-            xw.WriteElementString("Unk18", $"{disposition.Unk18}");
-            xw.WriteElementString("Unk1C", $"{disposition.Unk1C}");
-            xw.WriteElementString("Unk20", $"{disposition.Unk20}");
-            xw.WriteElementString("Unk28", $"{disposition.Unk28}");
+            xw.WriteStartElement($"Event");
+            xw.WriteElementString("ID", $"{@event.ID}");
+            xw.WriteElementString("Duration", $"{@event.Duration}");
+            xw.WriteElementString("ResourceIndex", $"{@event.ResourceIndex}");
+            xw.WriteElementString("StartFrame", $"{@event.StartFrame}");
+            xw.WriteElementString("Unk08", $"{@event.Unk08}");
+            xw.WriteElementString("Unk14", $"{@event.Unk14}");
+            xw.WriteElementString("Unk18", $"{@event.Unk18}");
+            xw.WriteElementString("Unk1C", $"{@event.Unk1C}");
+            xw.WriteElementString("Unk20", $"{@event.Unk20}");
+            xw.WriteElementString("Unk28", $"{@event.Unk28}");
             xw.WriteStartElement($"Transforms");
-            foreach (var transform in disposition.Transforms)
+            foreach (var transform in @event.Transforms)
                 UnpackTransform(xw, transform);
             xw.WriteEndElement();
-            xw.WriteStartElement($"Disposition_CustomData");
-            foreach (var customdata in disposition.CustomData)
-                UnpackCustomData(xw, customdata);
+            xw.WriteStartElement($"Event_Parameter");
+            foreach (var parameter in @event.Parameters)
+                UnpackParameter(xw, parameter);
             xw.WriteEndElement();
             xw.WriteEndElement();
         }
@@ -235,51 +235,51 @@ namespace YabberExtended
             string path = resNode.SelectSingleNode("Path").InnerText;
             int parentIndex = FriendlyParseInt32(nameof(MQB.Resource), nameof(MQB.Resource.ParentIndex), resNode.SelectSingleNode("ParentIndex").InnerText);
             int unk48 = FriendlyParseInt32(nameof(MQB.Resource), nameof(MQB.Resource.Unk48), resNode.SelectSingleNode("Unk48").InnerText);
-            List<MQB.CustomData> customData = new List<MQB.CustomData>();
+            List<MQB.Parameter> parameter = new List<MQB.Parameter>();
 
-            var resCusDataNode = resNode.SelectSingleNode("Resource_CustomData");
-            foreach (XmlNode cusDataNode in resCusDataNode.SelectNodes("CustomData"))
-                customData.Add(RepackCustomData(cusDataNode));
+            var resParamNode = resNode.SelectSingleNode("Resource_Parameter");
+            foreach (XmlNode paramNode in resParamNode.SelectNodes("Parameter"))
+                parameter.Add(RepackParameter(paramNode));
 
             resource.Name = name;
             resource.Path = path;
             resource.ParentIndex = parentIndex;
             resource.Unk48 = unk48;
-            resource.CustomData = customData;
+            resource.Parameters = parameter;
             return resource;
         }
 
-        public static MQB.CustomData RepackCustomData(XmlNode customdataNode)
+        public static MQB.Parameter RepackParameter(XmlNode parameterNode)
         {
-            MQB.CustomData customdata = new MQB.CustomData();
+            MQB.Parameter parameter = new MQB.Parameter();
 
-            string name = customdataNode.SelectSingleNode("Name").InnerText;
-            var type = FriendlyParseEnum<MQB.CustomData.DataType>(nameof(MQB.CustomData), nameof(MQB.CustomData.Type), customdataNode.SelectSingleNode("Type").InnerText);
+            string name = parameterNode.SelectSingleNode("Name").InnerText;
+            var type = FriendlyParseEnum<MQB.Parameter.DataType>(nameof(MQB.Parameter), nameof(MQB.Parameter.Type), parameterNode.SelectSingleNode("Type").InnerText);
 
-            int memberCount = FriendlyParseInt32(nameof(MQB.CustomData), nameof(MQB.CustomData.MemberCount), customdataNode.SelectSingleNode("MemberCount").InnerText);
-            object value = ConvertValueToDataType(customdataNode.SelectSingleNode("Value").InnerText, type, memberCount);
-            List<MQB.CustomData.Sequence> sequences = new List<MQB.CustomData.Sequence>();
+            int memberCount = FriendlyParseInt32(nameof(MQB.Parameter), nameof(MQB.Parameter.MemberCount), parameterNode.SelectSingleNode("MemberCount").InnerText);
+            object value = ConvertValueToDataType(parameterNode.SelectSingleNode("Value").InnerText, type, memberCount);
+            List<MQB.Parameter.Sequence> sequences = new List<MQB.Parameter.Sequence>();
 
-            var seqsNode = customdataNode.SelectSingleNode("Sequences");
+            var seqsNode = parameterNode.SelectSingleNode("Sequences");
             foreach (XmlNode seqNode in seqsNode.SelectNodes("Sequence"))
                 sequences.Add(RepackSequence(seqNode));
 
-            customdata.Name = name;
-            customdata.Type = type;
-            customdata.Value = value;
-            customdata.MemberCount = memberCount;
-            customdata.Sequences = sequences;
-            return customdata;
+            parameter.Name = name;
+            parameter.Type = type;
+            parameter.Value = value;
+            parameter.MemberCount = memberCount;
+            parameter.Sequences = sequences;
+            return parameter;
         }
 
-        public static MQB.CustomData.Sequence RepackSequence(XmlNode seqNode)
+        public static MQB.Parameter.Sequence RepackSequence(XmlNode seqNode)
         {
-            MQB.CustomData.Sequence sequence = new MQB.CustomData.Sequence();
+            MQB.Parameter.Sequence sequence = new MQB.Parameter.Sequence();
 
-            int valueIndex = FriendlyParseInt32(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.ValueIndex), seqNode.SelectSingleNode("ValueIndex").InnerText);
-            var type = FriendlyParseEnum<MQB.CustomData.DataType>(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.ValueType), seqNode.SelectSingleNode("ValueType").InnerText);
-            int pointType = FriendlyParseInt32(nameof(MQB.CustomData.Sequence), nameof(MQB.CustomData.Sequence.PointType), seqNode.SelectSingleNode("PointType").InnerText);
-            List<MQB.CustomData.Sequence.Point> points = new List<MQB.CustomData.Sequence.Point>();
+            int valueIndex = FriendlyParseInt32(nameof(MQB.Parameter.Sequence), nameof(MQB.Parameter.Sequence.ValueIndex), seqNode.SelectSingleNode("ValueIndex").InnerText);
+            var type = FriendlyParseEnum<MQB.Parameter.DataType>(nameof(MQB.Parameter.Sequence), nameof(MQB.Parameter.Sequence.ValueType), seqNode.SelectSingleNode("ValueType").InnerText);
+            int pointType = FriendlyParseInt32(nameof(MQB.Parameter.Sequence), nameof(MQB.Parameter.Sequence.PointType), seqNode.SelectSingleNode("PointType").InnerText);
+            List<MQB.Parameter.Sequence.Point> points = new List<MQB.Parameter.Sequence.Point>();
 
             var pointsNode = seqNode.SelectSingleNode("Points");
             foreach (XmlNode pointNode in pointsNode.SelectNodes("Point"))
@@ -292,23 +292,23 @@ namespace YabberExtended
             return sequence;
         }
 
-        public static MQB.CustomData.Sequence.Point RepackPoint(XmlNode pointNode, MQB.CustomData.DataType type)
+        public static MQB.Parameter.Sequence.Point RepackPoint(XmlNode pointNode, MQB.Parameter.DataType type)
         {
-            MQB.CustomData.Sequence.Point point = new MQB.CustomData.Sequence.Point();
+            MQB.Parameter.Sequence.Point point = new MQB.Parameter.Sequence.Point();
 
             string valueStr = pointNode.SelectSingleNode("Value").InnerText;
             object value;
 
             switch (type)
             {
-                case MQB.CustomData.DataType.Byte: value = FriendlyParseByte(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Value), valueStr); break;
-                case MQB.CustomData.DataType.Float: value = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Value), valueStr); break;
+                case MQB.Parameter.DataType.Byte: value = FriendlyParseByte(nameof(MQB.Parameter.Sequence.Point), nameof(MQB.Parameter.Sequence.Point.Value), valueStr); break;
+                case MQB.Parameter.DataType.Float: value = FriendlyParseFloat32(nameof(MQB.Parameter.Sequence.Point), nameof(MQB.Parameter.Sequence.Point.Value), valueStr); break;
                 default: throw new NotSupportedException($"Unsupported sequence point value type: {type}");
             }
 
-            int unk08 = FriendlyParseInt32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk08), pointNode.SelectSingleNode("Unk08").InnerText);
-            float unk10 = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk10), pointNode.SelectSingleNode("Unk10").InnerText);
-            float unk14 = FriendlyParseFloat32(nameof(MQB.CustomData.Sequence.Point), nameof(MQB.CustomData.Sequence.Point.Unk14), pointNode.SelectSingleNode("Unk14").InnerText);
+            int unk08 = FriendlyParseInt32(nameof(MQB.Parameter.Sequence.Point), nameof(MQB.Parameter.Sequence.Point.Unk08), pointNode.SelectSingleNode("Unk08").InnerText);
+            float unk10 = FriendlyParseFloat32(nameof(MQB.Parameter.Sequence.Point), nameof(MQB.Parameter.Sequence.Point.Unk10), pointNode.SelectSingleNode("Unk10").InnerText);
+            float unk14 = FriendlyParseFloat32(nameof(MQB.Parameter.Sequence.Point), nameof(MQB.Parameter.Sequence.Point.Unk14), pointNode.SelectSingleNode("Unk14").InnerText);
 
             point.Value = value;
             point.Unk08 = unk08;
@@ -342,61 +342,61 @@ namespace YabberExtended
             MQB.Timeline timeline = new MQB.Timeline();
 
             int unk10 = FriendlyParseInt32(nameof(MQB.Timeline), nameof(MQB.Timeline.Unk10), timelineNode.SelectSingleNode("Unk10").InnerText);
-            List<MQB.Disposition> dispositions = new List<MQB.Disposition>();
-            List<MQB.CustomData> customdata = new List<MQB.CustomData>();
+            List<MQB.Event> events = new List<MQB.Event>();
+            List<MQB.Parameter> parameters = new List<MQB.Parameter>();
 
-            var dispositionsNode = timelineNode.SelectSingleNode("Dispositions");
-            foreach (XmlNode disNode in dispositionsNode.SelectNodes("Disposition"))
-                dispositions.Add(RepackDisposition(disNode));
+            var eventsNode = timelineNode.SelectSingleNode("Events");
+            foreach (XmlNode eventNode in eventsNode.SelectNodes("Event"))
+                events.Add(RepackEvent(eventNode));
 
-            var timelineCusDataNode = timelineNode.SelectSingleNode("Timeline_CustomData");
-            foreach (XmlNode cusDataNode in timelineCusDataNode.SelectNodes("CustomData"))
-                customdata.Add(RepackCustomData(cusDataNode));
+            var timelineParamNode = timelineNode.SelectSingleNode("Timeline_Parameter");
+            foreach (XmlNode paramNode in timelineParamNode.SelectNodes("Parameter"))
+                parameters.Add(RepackParameter(paramNode));
 
             timeline.Unk10 = unk10;
-            timeline.Dispositions = dispositions;
-            timeline.CustomData = customdata;
+            timeline.Events = events;
+            timeline.Parameters = parameters;
             return timeline;
         }
 
-        public static MQB.Disposition RepackDisposition(XmlNode disNode)
+        public static MQB.Event RepackEvent(XmlNode eventNode)
         {
-            MQB.Disposition disposition = new MQB.Disposition();
+            MQB.Event mqbEvent = new MQB.Event();
 
-            int id = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.ID), disNode.SelectSingleNode("ID").InnerText);
-            int duration = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Duration), disNode.SelectSingleNode("Duration").InnerText);
-            int resIndex = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.ResourceIndex), disNode.SelectSingleNode("ResourceIndex").InnerText);
-            int startFrame = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.StartFrame), disNode.SelectSingleNode("StartFrame").InnerText);
-            int unk08 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk08), disNode.SelectSingleNode("Unk08").InnerText);
-            int unk14 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk14), disNode.SelectSingleNode("Unk14").InnerText);
-            int unk18 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk18), disNode.SelectSingleNode("Unk18").InnerText);
-            int unk1C = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk1C), disNode.SelectSingleNode("Unk1C").InnerText);
-            int unk20 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk20), disNode.SelectSingleNode("Unk20").InnerText);
-            int unk28 = FriendlyParseInt32(nameof(MQB.Disposition), nameof(MQB.Disposition.Unk28), disNode.SelectSingleNode("Unk28").InnerText);
+            int id = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.ID), eventNode.SelectSingleNode("ID").InnerText);
+            int duration = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Duration), eventNode.SelectSingleNode("Duration").InnerText);
+            int resIndex = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.ResourceIndex), eventNode.SelectSingleNode("ResourceIndex").InnerText);
+            int startFrame = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.StartFrame), eventNode.SelectSingleNode("StartFrame").InnerText);
+            int unk08 = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk08), eventNode.SelectSingleNode("Unk08").InnerText);
+            int unk14 = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk14), eventNode.SelectSingleNode("Unk14").InnerText);
+            int unk18 = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk18), eventNode.SelectSingleNode("Unk18").InnerText);
+            int unk1C = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk1C), eventNode.SelectSingleNode("Unk1C").InnerText);
+            int unk20 = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk20), eventNode.SelectSingleNode("Unk20").InnerText);
+            int unk28 = FriendlyParseInt32(nameof(MQB.Event), nameof(MQB.Event.Unk28), eventNode.SelectSingleNode("Unk28").InnerText);
             List<MQB.Transform> transforms = new List<MQB.Transform>();
-            List<MQB.CustomData> customdata = new List<MQB.CustomData>();
+            List<MQB.Parameter> parameters = new List<MQB.Parameter>();
 
-            var transformsNode = disNode.SelectSingleNode("Transforms");
+            var transformsNode = eventNode.SelectSingleNode("Transforms");
             foreach (XmlNode transformNode in transformsNode.SelectNodes("Transform"))
                 transforms.Add(RepackTransform(transformNode));
 
-            var disCusDataNode = disNode.SelectSingleNode("Disposition_CustomData");
-            foreach (XmlNode cusDataNode in disCusDataNode.SelectNodes("CustomData"))
-                customdata.Add(RepackCustomData(cusDataNode));
+            var eventParamNodes = eventNode.SelectSingleNode("Event_Parameter");
+            foreach (XmlNode paramNode in eventParamNodes.SelectNodes("Parameter"))
+                parameters.Add(RepackParameter(paramNode));
 
-            disposition.ID = id;
-            disposition.Duration = duration;
-            disposition.ResourceIndex = resIndex;
-            disposition.StartFrame = startFrame;
-            disposition.Unk08 = unk08;
-            disposition.Unk14 = unk14;
-            disposition.Unk18 = unk18;
-            disposition.Unk1C = unk1C;
-            disposition.Unk20 = unk20;
-            disposition.Unk28 = unk28;
-            disposition.Transforms = transforms;
-            disposition.CustomData = customdata;
-            return disposition;
+            mqbEvent.ID = id;
+            mqbEvent.Duration = duration;
+            mqbEvent.ResourceIndex = resIndex;
+            mqbEvent.StartFrame = startFrame;
+            mqbEvent.Unk08 = unk08;
+            mqbEvent.Unk14 = unk14;
+            mqbEvent.Unk18 = unk18;
+            mqbEvent.Unk1C = unk1C;
+            mqbEvent.Unk20 = unk20;
+            mqbEvent.Unk28 = unk28;
+            mqbEvent.Transforms = transforms;
+            mqbEvent.Parameters = parameters;
+            return mqbEvent;
         }
 
         public static MQB.Transform RepackTransform(XmlNode transNode)
@@ -493,37 +493,37 @@ namespace YabberExtended
             return new Vector4(x, y, z, w);
         }
 
-        public static object ConvertValueToDataType(string str, MQB.CustomData.DataType type, int memberCount)
+        public static object ConvertValueToDataType(string str, MQB.Parameter.DataType type, int memberCount)
         {
             try
             {
                 switch (type)
                 {
-                    case MQB.CustomData.DataType.Bool: return Convert.ToBoolean(str);
-                    case MQB.CustomData.DataType.SByte: return Convert.ToSByte(str);
-                    case MQB.CustomData.DataType.Byte: return Convert.ToByte(str);
-                    case MQB.CustomData.DataType.Short: return Convert.ToInt16(str);
-                    case MQB.CustomData.DataType.Int: return Convert.ToInt32(str);
-                    case MQB.CustomData.DataType.UInt: return Convert.ToUInt32(str);
-                    case MQB.CustomData.DataType.Float: return Convert.ToSingle(str);
-                    case MQB.CustomData.DataType.String: return str;
-                    case MQB.CustomData.DataType.Custom: return str.FriendlyHexToByteArray();
-                    case MQB.CustomData.DataType.Color: return ConvertValueToColor(str);
-                    case MQB.CustomData.DataType.IntColor: return ConvertValueToColor(str);
-                    case MQB.CustomData.DataType.Vector:
+                    case MQB.Parameter.DataType.Bool: return Convert.ToBoolean(str);
+                    case MQB.Parameter.DataType.SByte: return Convert.ToSByte(str);
+                    case MQB.Parameter.DataType.Byte: return Convert.ToByte(str);
+                    case MQB.Parameter.DataType.Short: return Convert.ToInt16(str);
+                    case MQB.Parameter.DataType.Int: return Convert.ToInt32(str);
+                    case MQB.Parameter.DataType.UInt: return Convert.ToUInt32(str);
+                    case MQB.Parameter.DataType.Float: return Convert.ToSingle(str);
+                    case MQB.Parameter.DataType.String: return str;
+                    case MQB.Parameter.DataType.Custom: return str.FriendlyHexToByteArray();
+                    case MQB.Parameter.DataType.Color: return ConvertValueToColor(str);
+                    case MQB.Parameter.DataType.IntColor: return ConvertValueToColor(str);
+                    case MQB.Parameter.DataType.Vector:
                         switch (memberCount)
                         {
                             case 2: return str.ToVector2();
                             case 3: return str.ToVector3();
                             case 4: return str.ToVector4();
-                            default: throw new NotSupportedException($"{nameof(MQB.CustomData.MemberCount)} {memberCount} not supported for: {nameof(MQB.CustomData.DataType.Vector)}");
+                            default: throw new NotSupportedException($"{nameof(MQB.Parameter.MemberCount)} {memberCount} not supported for: {nameof(MQB.Parameter.DataType.Vector)}");
                         }
-                    default: throw new NotImplementedException($"Unimplemented custom data type: {type}");
+                    default: throw new NotImplementedException($"Unimplemented parameter type: {type}");
                 }
             }
             catch
             {
-                throw new FriendlyException($"The value \"{str}\" could not be converted to the type {type} during custom data repacking.");
+                throw new FriendlyException($"The value \"{str}\" could not be converted to the type {type} during parameter repacking.");
             }
         }
 
@@ -748,7 +748,7 @@ namespace YabberExtended
         {
             if (!IsValidHexString(hex))
             {
-                throw new FriendlyException("A hex string in a CustomData's value could not be parsed as hex. Valid hex characters are: 0-9 A-F a-f");
+                throw new FriendlyException("A hex string in a Parameter's value could not be parsed as hex. Valid hex characters are: 0-9 A-F a-f");
             }
 
             if (hex.Length == 0)
@@ -769,7 +769,7 @@ namespace YabberExtended
                 {
                     hex += "00";
                 }
-                Console.WriteLine("Warning: Hex string was not divisible by 4 for Custom type of CustomData, added 00 until it was.");
+                Console.WriteLine("Warning: Hex string was not divisible by 4 for Custom type of Parameter, added 00 until it was.");
             }
 
             try
