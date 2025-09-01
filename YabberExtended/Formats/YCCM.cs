@@ -33,7 +33,7 @@ namespace YabberExtended
                 var code = pair.Key;
                 var glyph = pair.Value;
                 xw.WriteStartElement("glyph");
-                xw.WriteAttributeString("code", $"0x{code:x4}");
+                xw.WriteAttributeString("code", $"0x{code:x8}");
                 xw.WriteAttributeString("uv0", ToStringVector2(glyph.UV1));
                 xw.WriteAttributeString("uv1", ToStringVector2(glyph.UV2));
                 xw.WriteAttributeString("padding", glyph.PreSpace.ToString());
