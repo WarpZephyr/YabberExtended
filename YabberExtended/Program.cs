@@ -170,6 +170,13 @@ namespace YabberExtended
                     fmg.Compression = compression;
                     fmg.Unpack(sourceFile);
                 }
+                else if (sourceFile.EndsWith(".ccm.dcx"))
+                {
+                    Console.WriteLine($"Unpacking CCM: {filename}...");
+                    CCM ccm = CCM.Read(bytes);
+                    ccm.Compression = compression;
+                    ccm.Unpack(sourceFile);
+                }
                 else if (GPARAM.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking GPARAM: {filename}...");
@@ -345,6 +352,17 @@ namespace YabberExtended
                 {
                     Console.WriteLine($"Repacking FMG: {filename}...");
                     YFMG.Repack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".ccm"))
+                {
+                    Console.WriteLine($"Unpacking CCM: {filename}...");
+                    CCM ccm = CCM.Read(sourceFile);
+                    ccm.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".ccm.xml") || sourceFile.EndsWith(".ccm.dcx.xml"))
+                {
+                    Console.WriteLine($"Repacking CCM: {filename}...");
+                    YCCM.Repack(sourceFile);
                 }
                 else if (GPARAM.Is(sourceFile))
                 {
