@@ -97,3 +97,6 @@ https://github.com/JKAnderson/Yabber
 
 ### 1.2.3
 * Minor bugfix to BND2 repack when files are nameless.
+
+### 1.2.4
+* Minor bugfix to BND4 repack not being able to find file entries.

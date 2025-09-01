@@ -1,5 +1,5 @@
 
---| YabberExtended 1.2.3
+--| YabberExtended 1.2.4
 --| By WarpZephyr
 --| https://github.com/WarpZephyr/YabberExtended
 --| 
@@ -194,3 +194,6 @@ WarpZephyr - MQB Support and various misc Armored Core Formats.
 
 1.2.3
 	Minor bugfix to BND2 repack when files are nameless.
+
+1.2.4
+	Minor bugfix to BND4 repack not being able to find file entries.
